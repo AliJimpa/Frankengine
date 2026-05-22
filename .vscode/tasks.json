@@ -1,0 +1,121 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Generate Build Structure",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "mkdir build >nul 2>&1",
+                "& mkdir build\\Debug >nul 2>&1",
+                "& mkdir build\\Debug\\Editor >nul 2>&1",
+                "& mkdir build\\Debug\\Editor\\BuildPipeline >nul 2>&1",
+                "& mkdir build\\Debug\\Intermediate >nul 2>&1",
+                "& mkdir build\\Debug\\Intermediate\\BuildPipeline >nul 2>&1",
+                "& mkdir build\\Release >nul 2>&1",
+                "& mkdir build\\Release\\Editor >nul 2>&1",
+                "& mkdir build\\Release\\Editor\\BuildPipeline >nul 2>&1",
+                "& mkdir build\\Release\\Intermediate >nul 2>&1",
+                "& mkdir build\\Release\\Intermediate\\BuildPipeline >nul 2>&1 &",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "none",
+            "detail": "Create all folder need for build prject"
+        },
+        {
+            "type": "shell",
+            "label": "Engine (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/EHsc",
+                "/LD",
+                "/D",
+                "FRANKENGINE_EXPORTS",
+                "/I",
+                "${workspaceFolder}\\include",
+                "/I",
+                "${workspaceFolder}\\include\\SDK",
+                "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\EngineRuntime.obj",
+                "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\EngineRuntime.dll",
+                "${workspaceFolder}\\src\\engine\\EngineRuntime.cpp",
+                "/link",
+                "/IMPLIB:${workspaceFolder}\\build\\Debug\\Intermediate\\EngineRuntime.lib",
+            ],
+            "dependsOn": "Generate Build Structure",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Editor (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/EHsc",
+                "${workspaceFolder}\\src\\editor\\Editor.cpp",
+                "/INCREMENTAL",
+                "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\Editor.obj",
+                "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\Editor.exe",
+            ],
+            "dependsOn": "Generate Build Structure",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "GameLauncher (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/EHsc",
+                "${workspaceFolder}\\src\\editor\\pipeline\\GameLauncher.cpp",
+                "/INCREMENTAL",
+                "/I",
+                "${workspaceFolder}\\include",
+                "/I",
+                "${workspaceFolder}\\include\\SDK",
+                "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\BuildPipeline\\GameLauncher.obj",
+                "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\BuildPipeline\\GameLauncher.exe",
+            ],
+            "dependsOn": "Generate Build Structure",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "label": "Open",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "cd ${workspaceFolder}\\build\\Editor\\"
+            ],
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "detail": "Create GameEngine"
+        },
+    ]
+}
