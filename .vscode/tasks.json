@@ -1,0 +1,47 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "CMake: Configure",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"-S",
+				"${workspaceFolder}",
+				"-B",
+				"${workspaceFolder}/build"
+			],
+			"detail": "Make Solution File"
+		},
+		{
+			"label": "EngineRuntime.dll",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--target",
+				"EngineRuntime"
+			],
+			"dependsOn": "CMake: Configure",
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+		},
+		{
+			"label": "Editor.exe",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--target",
+				"Editor"
+			],
+			"dependsOn": "CMake: Configure",
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+		}
+	]
+}
