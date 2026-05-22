@@ -2,6 +2,29 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+            "type": "shell",
+            "label": "Build [Project] [OpenGL] [Imgui] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/W4",
+                "/EHsc",
+                "/I${workspaceFolder}\\include\\SDK",
+                "/I${workspaceFolder}\\bin\\CL",
+                //"/Fo${workspaceFolder}\\build\\Debug\\",
+                "/Fe${workspaceFolder}\\bin\\CL\\Editor.exe",
+                "${workspaceFolder}/src/editor/*.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+		{
 			"label": "CMake: Configure",
 			"type": "shell",
 			"command": "cmake",
@@ -14,12 +37,14 @@
 			"detail": "Make Solution File"
 		},
 		{
-			"label": "EngineRuntime.dll",
+			"label": "EngineRuntime.dll [Debug]",
 			"type": "shell",
 			"command": "cmake",
 			"args": [
 				"--build",
 				"${workspaceFolder}/build",
+				"--config",
+				"Debug",
 				"--target",
 				"EngineRuntime"
 			],
@@ -29,12 +54,14 @@
 			"detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
 		},
 		{
-			"label": "Editor.exe",
+			"label": "Editor.exe [Debug]",
 			"type": "shell",
 			"command": "cmake",
 			"args": [
 				"--build",
 				"${workspaceFolder}/build",
+				"--config",
+				"Debug",
 				"--target",
 				"Editor"
 			],
@@ -42,6 +69,57 @@
 			"group": "build",
 			"problemMatcher": [],
 			"detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+		},
+		{
+			"label": "GameLauncher.exe [Debug]",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--config",
+				"Debug",
+				"--target",
+				"GameLauncher"
+			],
+			"dependsOn": "CMake: Configure",
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+		},
+		{
+			"label": "EngineRuntime.dll [Release]",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--config",
+				"Release",
+				"--target",
+				"EngineRuntime"
+			],
+			"dependsOn": "CMake: Configure",
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Compiler(CL) , SolutionConfg(Release) , Platform(Win32[x86])"
+		},
+		{
+			"label": "Editor.exe [Release]",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--config",
+				"Release",
+				"--target",
+				"Editor"
+			],
+			"dependsOn": "CMake: Configure",
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Compiler(CL) , SolutionConfg(Release) , Platform(Win32[x86])"
 		}
 	]
 }

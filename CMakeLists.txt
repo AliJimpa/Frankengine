@@ -4,15 +4,18 @@ project(Frankengine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 ##### EngineRuntime.dll #####
 
 add_library(EngineRuntime SHARED
     src/engine/EngineRuntime.cpp
 )
+target_compile_definitions(EngineRuntime PRIVATE FRANKENGINE_EXPORTS)
 target_include_directories(EngineRuntime
     PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/SDK
 )
 set_target_properties(EngineRuntime PROPERTIES
@@ -22,7 +25,7 @@ set_target_properties(EngineRuntime PROPERTIES
 ##### Editor.exe #####
 
 add_executable(Editor
-    src/main.cpp
+    src/editor/Editor.cpp
 )
 target_include_directories(Editor
     PRIVATE
@@ -32,9 +35,39 @@ target_include_directories(Editor
 #     PRIVATE
 #     EngineRuntime
 # )
+target_link_options(Editor PRIVATE /INCREMENTAL:NO)
 set_target_properties(Editor PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/$<CONFIG>"
 )
+
+
+
+##### BuildPipeline.exe #####
+
+add_executable(GameLauncher
+    src/buildPipeline/GameLauncher.cpp
+)
+target_include_directories(GameLauncher
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/SDK
+)
+set_target_properties(GameLauncher PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/$<CONFIG>/BuildPipeline"
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ##### Global Setting #####
@@ -54,3 +87,16 @@ set_target_properties(Editor PROPERTIES
 #     ${CMAKE_CURRENT_SOURCE_DIR}/include/SDK
 # )
 # target_link_libraries(Editor PRIVATE EngineRuntime)
+
+# Different compiler options for Debug vs Release
+# target_compile_options(EngineRuntime PRIVATE
+#     $<$<CONFIG:Debug>:-g>   # example for GCC/Clang
+#     $<$<CONFIG:Release>:-O3>
+# )
+
+# Optional — different compiler flags for each config
+# target_compile_options(EngineRuntime PRIVATE
+#     $<$<CXX_COMPILER_ID:MSVC>:/MP>
+#     $<$<CONFIG:Debug>:/Zi>      # PDB debug info
+#     $<$<CONFIG:Release>:/O2>    # Optimization
+# )
