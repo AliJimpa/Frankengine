@@ -57,7 +57,19 @@ set_target_properties(GameLauncher PROPERTIES
 )
 
 
-
+##### Game.dll #####
+add_library(Game SHARED
+    bin/Debug/Projects/Alijimpa/scripts/Game.cpp
+)
+target_compile_definitions(Game PRIVATE FRANKENGINE_EXPORTS)
+target_include_directories(Game
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/SDK
+)
+set_target_properties(Game PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/$<CONFIG>/Projects/Alijimpa/build"
+)
 
 
 

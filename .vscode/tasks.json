@@ -54,6 +54,23 @@
 			"detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
 		},
 		{
+			"label": "Game.dll [Debug]",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--config",
+				"Debug",
+				"--target",
+				"Game"
+			],
+			"dependsOn": "CMake: Configure",
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+		},
+		{
 			"label": "Editor.exe [Debug]",
 			"type": "shell",
 			"command": "cmake",

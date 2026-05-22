@@ -31,8 +31,7 @@ public:
     }
 };
 
-extern "C" __declspec(dllexport)
-IGame* createGame()
+extern "C" FRANKENGINE_API IGame* createGame()
 {
     return new Game();
 })";
