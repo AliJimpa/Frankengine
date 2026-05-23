@@ -61,13 +61,32 @@
             "command": "cl.exe",
             "args": [
                 "/std:c++17",
+                "/W4",
                 "/EHsc",
+                "/I${workspaceFolder}\\include",
+                "/I${workspaceFolder}\\include\\Systems",
+                "/I${workspaceFolder}\\include\\Editor",
+                "/I${workspaceFolder}\\include\\Editor\\Core",
+                "/I${workspaceFolder}\\include\\Editor\\UI",
+                "/I${workspaceFolder}\\include\\Editor\\UI\\Widget",
+                "/I${workspaceFolder}\\include\\Editor\\UI\\Widget\\Base",
+                "/I${workspaceFolder}\\ext\\imgui",
+                "/I${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\include",
+                //"/I${workspaceFolder}\\deps\\glew-2.3.1\\include\\GL",
+                "/I${workspaceFolder}\\build\\Debug",
+                "opengl32.lib",
+                "${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\lib-vc2022\\glfw3dll.lib",
+                //"${workspaceFolder}\\deps\\GLEW\\glew32s.lib",
+                "${workspaceFolder}/ext/imgui/*.cpp",
+                "${workspaceFolder}/ext/imgui/backends/imgui_impl_glfw.cpp",
+                "${workspaceFolder}/ext/imgui/backends/imgui_impl_opengl2.cpp",
+                "${workspaceFolder}/src/editor/ui/*.cpp",
+                "${workspaceFolder}/src/editor/core/*.cpp",
                 "${workspaceFolder}\\src\\editor\\Editor.cpp",
-                "/INCREMENTAL",
-                "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\Editor.obj",
+                "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\",
                 "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\Editor.exe",
             ],
-            "dependsOn": "Generate Build Structure",
+            "dependsOn": "Copy Dependencies",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -104,18 +123,31 @@
             "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
         },
         {
-            "label": "Open",
             "type": "shell",
+            "label": "Run Editor (Debug)",
             "command": "cmd",
             "args": [
-                "cd ${workspaceFolder}\\build\\Editor\\"
+                "/C",
+                "start ${workspaceFolder}\\build\\Debug\\Editor\\Editor.exe"
             ],
-            "group": "test",
-            "presentation": {
-                "reveal": "always",
-                "panel": "shared"
+            "options": {
+                "cwd": "${workspaceFolder}"
             },
-            "detail": "Create GameEngine"
+            "group": "build",
         },
-    ]
+        {
+            "type": "shell",
+            "label": "Copy Dependencies",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "copy /Y \"${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\lib-vc2022\\glfw3.dll\" \"${workspaceFolder}\\build\\Debug\\Editor\\\""
+            ],
+            "dependsOn": "Generate Build Structure",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+        },
+    ],
 }

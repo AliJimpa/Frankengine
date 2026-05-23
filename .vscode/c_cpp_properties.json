@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Win32", // Or whatever name you prefer
+            "includePath": [
+                "${workspaceFolder}\\include",
+                "${workspaceFolder}\\include\\Systems",
+                "${workspaceFolder}\\include\\Editor",
+                "${workspaceFolder}\\include\\Editor\\Core",
+                "${workspaceFolder}\\include\\Editor\\UI",
+                "${workspaceFolder}\\include\\Editor\\UI\\Widget",
+                "${workspaceFolder}\\include\\Editor\\UI\\Widget\\Base",
+                "${workspaceFolder}\\ext\\imgui",
+                // Ensure this path is correct and points to the folder CONTAINING the GLFW folder
+                "${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\include", 
+                // Add any other include paths here...
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "IMGUI_IMPL_OPENGL_LOADER_GLAD" // Example define if you use it
+            ],
+            "compilerPath": "cl.exe", // Or the full path to cl.exe if not in PATH
+            "intelliSenseMode": "msvc-x64" // Or "msvc-x86" if you are building 32-bit
+        }
+    ],
+    "version": 4
+}
