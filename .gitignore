@@ -67,3 +67,15 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# Frankengine Project
+deps/*
+!deps/glfw-3.4.bin.WIN32/
+!deps/glfw-3.4.bin.WIN32/include/
+!deps/glfw-3.4.bin.WIN32/include/GLFW/
+!deps/glfw-3.4.bin.WIN32/include/GLFW/**
+!deps/glfw-3.4.bin.WIN32/lib-vc2022/
+!deps/glfw-3.4.bin.WIN32/lib-vc2022/**
+deps/glfw-3.4.bin.WIN32/docs/
+deps/glfw-3.4.bin.WIN32/LICENSE.md
+deps/glfw-3.4.bin.WIN32/README.md
