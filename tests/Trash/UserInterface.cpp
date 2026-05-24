@@ -4,7 +4,7 @@
 #include "W_TEST.h"
 #include "W_Demo.h"
 
-UserInterface::UserInterface(App *owner) : Graphic(owner)
+UserInterface::UserInterface(App *owner) : EditorGUISystem(owner)
 {
     CreateWidget<W_HelloWorld>();
     CreateWidget<W_TEST>();

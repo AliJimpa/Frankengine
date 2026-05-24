@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Widget.h"
+#include "EditorWidget.h"
 
-class W_Demo : public Widget
+class W_Demo : public EditorWidget
 {
 public:
     bool IsOpen = false;
-    W_Demo(Graphic *owner, App *application) : Widget(owner, application) {}
+    W_Demo(EditorGUISystem *owner) : EditorWidget(owner) {}
 
-    void OnRender() override
+    void Draw() override
     {
         if (IsOpen)
             ImGui::ShowDemoWindow(&IsOpen);

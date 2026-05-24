@@ -18,7 +18,7 @@ void App::run()
     // Start Applications
     OnStart();
 
-    // Init Graphic
+    // Init GUI
     if (!GetUI()->init())
         return;
 

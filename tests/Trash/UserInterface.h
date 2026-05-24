@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GUI.h"
+#include "EditorGUISystem.h"
 #include "App.h"
 
-class UserInterface : public Graphic
+class UserInterface : public EditorGUISystem
 {
 public:
     UserInterface(App *owner);

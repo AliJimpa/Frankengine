@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Widget.h"
+#include "EditorWidget.h"
 
-class W_HelloWorld : public Widget
+class W_HelloWorld : public EditorWidget
 {
 public:
-    W_HelloWorld(Graphic *owner , App* application) : Widget(owner, application) {}
-    void OnRender() override
+    W_HelloWorld(EditorGUISystem *owner) : EditorWidget(owner) {}
+    void Draw() override
     {
         float f = 0.0f;
         int counter = 0;
@@ -19,7 +19,7 @@ public:
         ImGui::Checkbox("Another Window", &show_another_window);
 
         ImGui::SliderFloat("float", &f, 0.0f, 1.0f);                                // Edit 1 float using a slider from 0.0f to 1.0f
-        ImGui::ColorEdit3("clear color", (float *)&GetUI()->GetSetting()->clear_color); // Edit 3 floats representing a color
+        ImGui::ColorEdit3("clear color", (float *)&GetOwner()->GetSetting()->clear_color); // Edit 3 floats representing a color
 
         if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
             counter++;

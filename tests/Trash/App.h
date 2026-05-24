@@ -6,7 +6,7 @@ class App
 {
 public:
     App();
-    Graphic *GetUI() const { return MyUI; }
+    GUI *GetUI() const { return MyUI; }
     void Quit();
 
 protected:
@@ -18,6 +18,6 @@ protected:
 
 private:
     void run();
-    Graphic *MyUI;
+    GUI *MyUI;
     bool bIsRun = true;
 };

@@ -1,20 +1,21 @@
 #pragma once
 
-#include "Widget.h"
+#include "Engine.h"
+#include "EditorWidget.h"
 
-class W_TEST : public Widget
+class W_TEST : public EditorWidget
 {
 public:
     int Numbe = 0;
+    W_TEST(EditorGUISystem *owner) : EditorWidget(owner) {}
 
-    W_TEST(Graphic *owner, App *application) : Widget(owner, application) {}
-    void OnRender() override
+    void Draw() override
     {
         // std::cout << "Rendering Button Widget\n";
         ImGui::Begin("Arsalan"); // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
         ImGui::Text("Hello");
         if (ImGui::Button("QuitApp")) // Buttons return true when clicked (most widgets return true when edited/activated)
-            GetApp()->Quit();
+            Quit();
         ImGui::Text("MyTESTNumberr = %d", Numbe);
         if (ImGui::Button("Add"))
             Numbe++;

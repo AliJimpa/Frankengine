@@ -1,35 +1,22 @@
-#include "UserInterface.h"
-
+#include "EditorGUISystem.h"
 #include <iostream>
 #include <stdio.h>
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl2.h"
-#include "Widget.h"
-#include "App.h"
+#include "backends/imGUI_impl_glfw.h"
+#include "backends/imGUI_impl_opengl2.h"
 
-
-Graphic::Graphic(App* owner) : MyOwner(owner)
-{
-    // constructor implementation that uses app...
-}
-Graphic::Graphic(App* owner , UISetting &setting) : MyOwner(owner) , Setting(setting)
-{
-    // constructor implementation that uses app...
-}
-
-bool Graphic::init()
+void EditorGUISystem::Initialize()
 {
     // SetDebugFunction pointer
     glfwSetErrorCallback(glfw_error_callback);
 
     // CheckInitiate Validate
     if (!glfwInit())
-        return 1;
+        return;
 
     // Create window with graphics context
     window = glfwCreateWindow(Setting.width, Setting.height, "CPPLauncher", nullptr, nullptr);
     if (window == nullptr)
-        return false;
+        return;
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
@@ -62,10 +49,10 @@ bool Graphic::init()
 
     // Basic Parameter
     Setting.clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    return true;
+    return;
 }
 
-void Graphic::render()
+void EditorGUISystem::Render()
 {
     glfwPollEvents();
     if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
@@ -82,7 +69,7 @@ void Graphic::render()
     {
         if (widget != nullptr)
         {
-            widget->OnRender();
+            widget->Draw();
         }
     }
 
@@ -109,7 +96,7 @@ void Graphic::render()
     glfwSwapBuffers(window);
 }
 
-void Graphic::shutdown()
+void EditorGUISystem::Shutdown()
 {
     ImGui_ImplOpenGL2_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -120,13 +107,12 @@ void Graphic::shutdown()
     MyWidgets.clear();
 }
 
-bool Graphic::canRender() const
+bool EditorGUISystem::canRender() const
 {
     return ShowUI && !glfwWindowShouldClose(window);
 }
 
-void Graphic::glfw_error_callback(int error, const char *description)
+void EditorGUISystem::glfw_error_callback(int error, const char *description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
-
