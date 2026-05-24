@@ -13,7 +13,7 @@ public:
     {
         // std::cout << "Rendering Button Widget\n";
         ImGui::Begin("Arsalan"); // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-        ImGui::Text("Hello");
+        ImGui::Text("Hello2222");
         if (ImGui::Button("QuitApp")) // Buttons return true when clicked (most widgets return true when edited/activated)
             Quit();
         ImGui::Text("MyTESTNumberr = %d", Numbe);

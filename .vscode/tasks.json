@@ -91,7 +91,7 @@
                 "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\",
                 "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\Editor.exe",
             ],
-            "dependsOn": "Copy Dependencies",
+            //"dependsOn": "Copy Dependencies",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
