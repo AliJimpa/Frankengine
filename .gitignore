@@ -79,3 +79,5 @@ deps/*
 deps/glfw-3.4.bin.WIN32/docs/
 deps/glfw-3.4.bin.WIN32/LICENSE.md
 deps/glfw-3.4.bin.WIN32/README.md
+
+imgui.ini
