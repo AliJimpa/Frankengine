@@ -13,8 +13,10 @@ void EditorGUISystem::Initialize()
     if (!glfwInit())
         return;
 
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // This hides the window from the OS
+
     // Create window with graphics context
-    window = glfwCreateWindow(Setting.width, Setting.height, "CPPLauncher", nullptr, nullptr);
+    window = glfwCreateWindow(Setting.width, Setting.height, "Frankengine", nullptr, nullptr);
     if (window == nullptr)
         return;
 
