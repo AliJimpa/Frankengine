@@ -1,10 +1,11 @@
-#include "Engine.h"
+#include "Application.h"
 #include "EditorGUISystem.h"
 #include <vector>
 #include <memory>
 #include "W_HelloWorld.h"
 #include "W_TEST.h"
 #include "W_Demo.h"
+
 
 int main()
 {
@@ -21,7 +22,7 @@ int main()
     for (auto &system : allSubsystems)
         system->Initialize();
 
-    while (running)
+    while (Application::isRunning())
     {
         for (auto &system : allSubsystems)
             system->Update();

@@ -13,10 +13,12 @@ void EditorGUISystem::Initialize()
     if (!glfwInit())
         return;
 
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // This hides the window from the OS
+    // glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // This hides the window from the OS
 
     // Create window with graphics context
-    window = glfwCreateWindow(Setting.width, Setting.height, "Frankengine", nullptr, nullptr);
+    GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+    window = glfwCreateWindow(mode->width, mode->height, "Frankengine", nullptr, nullptr);
     if (window == nullptr)
         return;
 
@@ -32,7 +34,7 @@ void EditorGUISystem::Initialize()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -57,26 +59,27 @@ void EditorGUISystem::Initialize()
 void EditorGUISystem::Render()
 {
     glfwPollEvents();
-    if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
+    isMinimized = (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0);
+
+    if (isMinimized)
     {
+        // Still sleep to save CPU, but don't 'return'
         ImGui_ImplGlfw_Sleep(10);
-        ShowUI = false;
     }
-
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL2_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-    for (auto &widget : GetWidgets())
+    else
     {
-        if (widget != nullptr)
+        // Only run UI logic when NOT minimized
+        ImGui_ImplOpenGL2_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        for (auto &widget : GetWidgets())
         {
-            widget->Draw();
+            if (widget != nullptr)
+                widget->Draw();
         }
+        ImGui::Render();
     }
 
-    // Rendering
-    ImGui::Render();
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
@@ -111,7 +114,7 @@ void EditorGUISystem::Shutdown()
 
 bool EditorGUISystem::canRender() const
 {
-    return ShowUI && !glfwWindowShouldClose(window);
+    return !glfwWindowShouldClose(window);
 }
 
 void EditorGUISystem::glfw_error_callback(int error, const char *description)

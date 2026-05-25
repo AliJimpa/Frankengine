@@ -5,13 +5,12 @@
 #include "imGUI.h"
 #include <vector>
 #include "EditorWidget.h"
+#include "Application.h"
 
 class UISetting
 {
 public:
     ImVec4 clear_color;
-    int width = 640;
-    int height = 480;
 };
 
 class EditorGUISystem : public ISubsystem
@@ -20,14 +19,20 @@ private:
     UISetting Setting;
     std::vector<EditorWidget *> MyWidgets;
     GLFWwindow *window;
-    bool ShowUI = true;
+    bool isMinimized = false;
 
 private: // ISubsystem Interface
     virtual void Initialize() override;
     virtual void Update() override
     {
         if (canRender())
+        {
             Render();
+        }
+        else
+        {
+            Application::quit();
+        }
     }
     virtual void Shutdown() override;
 

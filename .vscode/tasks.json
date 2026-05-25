@@ -60,7 +60,7 @@
         },
         {
             "type": "shell",
-            "label": "Editor (Debug)",
+            "label": "Build Editor (Debug)",
             "command": "cl.exe",
             "args": [
                 "/std:c++17",
@@ -99,6 +99,78 @@
                 "$msCompile"
             ],
             "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Compile Editor (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/nologo",
+                "/c", // compile-only
+                "/std:c++17",
+                "/W4",
+                "/EHsc",
+                "/Zi",
+                "/I${workspaceFolder}\\include",
+                "/I${workspaceFolder}\\include\\Systems",
+                "/I${workspaceFolder}\\include\\Editor",
+                "/I${workspaceFolder}\\include\\Editor\\Core",
+                "/I${workspaceFolder}\\include\\Editor\\system",
+                "/I${workspaceFolder}\\include\\Engine\\Core",
+                "/I${workspaceFolder}\\include\\Engine\\utility",
+                "/I${workspaceFolder}\\include\\Editor\\UI",
+                "/I${workspaceFolder}\\include\\Editor\\UI\\Widget",
+                "/I${workspaceFolder}\\include\\Editor\\UI\\Widget\\Base",
+                "/I${workspaceFolder}\\ext\\imgui",
+                "/I${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\include",
+                "/I${workspaceFolder}\\build\\Debug",
+                "${workspaceFolder}\\src\\editor\\Editor.cpp",
+                "/Fd:${workspaceFolder}\\build\\Debug\\Editor\\Editor.pdb",
+                "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\Editor.obj",
+            ],
+            //"dependsOn": "Copy Dependencies",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "label": "Link Editor (Debug)",
+            "type": "shell",
+            "command": "link.exe",
+            "args": [
+                "/nologo",
+                "/OUT:${workspaceFolder}\\build\\Debug\\Editor\\Editor.exe",
+                "/DEBUG",
+                // 1. Your Main entry point
+                "${workspaceFolder}\\build\\Debug\\Intermediate\\Editor.obj",
+                // 2. ONLY the functional objects (exclude any file that defines 'main')
+                // Using a loop-like list here is safer than *.obj to avoid double-definitions
+                "${workspaceFolder}\\build\\Debug\\Intermediate\\EditorGUISystem.obj",
+                "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui.obj",
+                "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_demo.obj",
+                "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_draw.obj",
+                "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_tables.obj",
+                "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_widgets.obj",
+                "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_impl_glfw.obj",
+                "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_impl_opengl2.obj",
+                // 3. Libs
+                "opengl32.lib",
+                "${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\lib-vc2022\\glfw3dll.lib"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "build",
+            "dependsOn": [
+                "Compile Editor (Debug)"
+            ],
             "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
         },
         {
