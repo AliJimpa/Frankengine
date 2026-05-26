@@ -13,12 +13,12 @@ void EditorGUISystem::Initialize()
     if (!glfwInit())
         return;
 
-    // glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // This hides the window from the OS
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // This hides the window from the OS
 
     // Create window with graphics context
-    GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-    const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-    window = glfwCreateWindow(mode->width, mode->height, "Frankengine", nullptr, nullptr);
+    //GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+    //const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+    window = glfwCreateWindow(20, 20, "Frankengine", nullptr, nullptr);
     if (window == nullptr)
         return;
 
@@ -34,7 +34,7 @@ void EditorGUISystem::Initialize()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();

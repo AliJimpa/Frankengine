@@ -3,7 +3,7 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "Generate Build Structure",
+            "label": "Generate Build Folder",
             "command": "cmd",
             "args": [
                 "/C",
@@ -17,7 +17,7 @@
                 "& mkdir build\\Release\\Editor >nul 2>&1",
                 "& mkdir build\\Release\\Editor\\BuildPipeline >nul 2>&1",
                 "& mkdir build\\Release\\Intermediate >nul 2>&1",
-                "& mkdir build\\Release\\Intermediate\\BuildPipeline >nul 2>&1 &",
+                "& mkdir build\\Release\\Intermediate\\BuildPipeline >nul 2>&1 &"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -27,7 +27,7 @@
         },
         {
             "type": "shell",
-            "label": "Engine (Debug)",
+            "label": "Build Engine (Debug)",
             "command": "cl.exe",
             "args": [
                 "/std:c++17",
@@ -46,9 +46,9 @@
                 "/link",
                 "/DEBUG",
                 "/PDB:${workspaceFolder}\\build\\Debug\\Editor\\EngineRuntime.pdb",
-                "/IMPLIB:${workspaceFolder}\\build\\Debug\\Intermediate\\EngineRuntime.lib",
+                "/IMPLIB:${workspaceFolder}\\build\\Debug\\Intermediate\\EngineRuntime.lib"
             ],
-            "dependsOn": "Generate Build Structure",
+            "dependsOn": "Generate Build Folder",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -89,9 +89,8 @@
                 "${workspaceFolder}\\src\\editor\\Editor.cpp",
                 "/Fd:${workspaceFolder}\\build\\Debug\\Editor\\Editor.pdb",
                 "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\",
-                "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\Editor.exe",
+                "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\Editor.exe"
             ],
-            //"dependsOn": "Copy Dependencies",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -103,11 +102,11 @@
         },
         {
             "type": "shell",
-            "label": "Compile Editor (Debug)",
+            "label": "Compile ActiveFile (Debug)",
             "command": "cl.exe",
             "args": [
                 "/nologo",
-                "/c", // compile-only
+                "/c",
                 "/std:c++17",
                 "/W4",
                 "/EHsc",
@@ -125,11 +124,10 @@
                 "/I${workspaceFolder}\\ext\\imgui",
                 "/I${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\include",
                 "/I${workspaceFolder}\\build\\Debug",
-                "${workspaceFolder}\\src\\editor\\Editor.cpp",
-                "/Fd:${workspaceFolder}\\build\\Debug\\Editor\\Editor.pdb",
-                "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\Editor.obj",
+                "${file}",
+                "/Fd:${workspaceFolder}\\build\\Debug\\Editor\\${fileBasenameNoExtension}.pdb",
+                "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\${fileBasenameNoExtension}.obj"
             ],
-            //"dependsOn": "Copy Dependencies",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -147,10 +145,7 @@
                 "/nologo",
                 "/OUT:${workspaceFolder}\\build\\Debug\\Editor\\Editor.exe",
                 "/DEBUG",
-                // 1. Your Main entry point
                 "${workspaceFolder}\\build\\Debug\\Intermediate\\Editor.obj",
-                // 2. ONLY the functional objects (exclude any file that defines 'main')
-                // Using a loop-like list here is safer than *.obj to avoid double-definitions
                 "${workspaceFolder}\\build\\Debug\\Intermediate\\EditorGUISystem.obj",
                 "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui.obj",
                 "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_demo.obj",
@@ -159,23 +154,20 @@
                 "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_widgets.obj",
                 "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_impl_glfw.obj",
                 "${workspaceFolder}\\build\\Debug\\Intermediate\\imgui_impl_opengl2.obj",
-                // 3. Libs
                 "opengl32.lib",
                 "${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\lib-vc2022\\glfw3dll.lib"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
+            "dependsOn": "Compile ActiveFile (Debug)",
             "problemMatcher": [],
             "group": "build",
-            "dependsOn": [
-                "Compile Editor (Debug)"
-            ],
             "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
         },
         {
             "type": "shell",
-            "label": "GameLauncher (Debug)",
+            "label": "Build GameLauncher (Debug)",
             "command": "cl.exe",
             "args": [
                 "/std:c++17",
@@ -189,9 +181,9 @@
                 "/I",
                 "${workspaceFolder}\\include\\SDK",
                 "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\BuildPipeline\\GameLauncher.obj",
-                "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\BuildPipeline\\GameLauncher.exe",
+                "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\BuildPipeline\\GameLauncher.exe"
             ],
-            "dependsOn": "Generate Build Structure",
+            "dependsOn": "Generate Build Folder",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -212,7 +204,22 @@
             "options": {
                 "cwd": "${workspaceFolder}"
             },
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "Fast Open Editor (Debug)",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "start ${workspaceFolder}\\build\\Debug\\Editor\\Editor.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "Link Editor (Debug)",
             "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
         },
         {
             "type": "shell",
@@ -222,11 +229,53 @@
                 "/c",
                 "copy /Y \"${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\lib-vc2022\\glfw3.dll\" \"${workspaceFolder}\\build\\Debug\\Editor\\\""
             ],
-            "dependsOn": "Generate Build Structure",
+            "dependsOn": "Generate Build Folder",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "label": "Build Kernel [TEST] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/W4",
+                "/EHsc",
+                "/Zi",
+                // "/I${workspaceFolder}\\include",
+                // "/I${workspaceFolder}\\include\\Systems",
+                // "/I${workspaceFolder}\\include\\Editor",
+                // "/I${workspaceFolder}\\include\\Editor\\Core",
+                // "/I${workspaceFolder}\\include\\Editor\\system",
+                // "/I${workspaceFolder}\\include\\Engine\\Core",
+                // "/I${workspaceFolder}\\include\\Engine\\utility",
+                // "/I${workspaceFolder}\\include\\Editor\\UI",
+                // "/I${workspaceFolder}\\include\\Editor\\UI\\Widget",
+                // "/I${workspaceFolder}\\include\\Editor\\UI\\Widget\\Base",
+                // "/I${workspaceFolder}\\ext\\imgui",
+                // "/I${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\include",
+                // "/I${workspaceFolder}\\build\\Debug",
+                // "opengl32.lib",
+                // "${workspaceFolder}\\deps\\glfw-3.4.bin.WIN32\\lib-vc2022\\glfw3dll.lib",
+                // "${workspaceFolder}/ext/imgui/*.cpp",
+                // "${workspaceFolder}/ext/imgui/backends/imgui_impl_glfw.cpp",
+                // "${workspaceFolder}/ext/imgui/backends/imgui_impl_opengl2.cpp",
+                // "${workspaceFolder}/src/editor/systems/*.cpp",
+                "${workspaceFolder}\\src\\Kernel\\Kernel.cpp",
+                "/Fd:${workspaceFolder}\\build\\Debug\\Editor\\Kernel.pdb",
+                "/Fo:${workspaceFolder}\\build\\Debug\\Intermediate\\",
+                "/Fe:${workspaceFolder}\\build\\Debug\\Editor\\Kernel.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
             "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
         },
     ],
 }
