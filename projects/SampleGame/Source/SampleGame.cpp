@@ -1,10 +1,14 @@
-#include "IGame.h"
+#define SAMPLEGAME_EXPORTS
+#include "SampleGameAPI.h"
+#include "IGameModule.h"
 
 // ============================================================
-//  SampleGame - minimal Game.dll, compiled separately from the
-//  Engine/Editor/Runtime. Only depends on the SDK headers.
+//  SampleGame - a minimal module (Game.dll). The class itself is
+//  marked SAMPLEGAME_API (its own project-owned macro), same as
+//  how an Unreal plugin marks its public classes with its
+//  generated <MODULE>_API - not a shared/generic one.
 // ============================================================
-class SampleGame : public IGame
+class SAMPLEGAME_API SampleGame : public IGameModule
 {
 public:
     void start(EngineAPI* api) override
@@ -16,8 +20,8 @@ public:
 
     void update() override
     {
-        if (m_api && m_api->logger)
-            m_api->logger->log("SampleGame update tick");
+        // if (m_api && m_api->logger)
+        //     m_api->logger->log("SampleGame update tick");
     }
 
     void shutdown() override
@@ -30,7 +34,7 @@ private:
     EngineAPI* m_api = nullptr;
 };
 
-extern "C" __declspec(dllexport) IGame* createGame()
+extern "C" SAMPLEGAME_API IGameModule* createModule()
 {
     return new SampleGame();
 }

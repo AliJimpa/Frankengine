@@ -18,6 +18,15 @@
             "args": [],
             "cwd": "${workspaceFolder}/projects/SampleGame/bin",
             "preLaunchTask": "Deploy Runtime -> SampleGame"
+        },
+        {
+            "name": "Debug SampleGame",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/SampleGame/SampleGame.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/build/Debug/SampleGame",
+            "preLaunchTask": "Deploy Runtime -> SampleGame"
         }
     ]
 }

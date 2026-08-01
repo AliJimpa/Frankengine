@@ -11,6 +11,9 @@
             ],
             "problemMatcher": []
         },
+        // ---- Engine (static lib). Only sees sdk/include - it's the one
+        //      that IMPLEMENTS GetEngineAPI(), it doesn't need its own
+        //      Engine/core headers to do that. ----
         {
             "label": "Compile Engine (Debug)",
             "type": "shell",
@@ -50,6 +53,9 @@
             "problemMatcher": [],
             "group": "build"
         },
+        // ---- Runtime (the player). Only sees sdk/include - it talks to
+        //      the game purely through IGame/EngineAPI, and links
+        //      Engine.lib for the real GetEngineAPI() symbol. ----
         {
             "label": "Build Runtime (Debug)",
             "type": "shell",
@@ -77,6 +83,9 @@
             ],
             "group": "build"
         },
+        // ---- Editor. Sees editor/include + engine/include (it's allowed
+        //      to reach into Engine internals - it's not crossing the
+        //      Game.dll ABI boundary) plus GLFW/ImGui. ----
         {
             "label": "Build Editor (Debug)",
             "type": "shell",
@@ -126,6 +135,13 @@
             ],
             "group": "build"
         },
+        // ---- SampleGame (a project). Only sees sdk/include - the build
+        //      config itself enforces the boundary: it is physically
+        //      impossible for this task to resolve an Engine/... header,
+        //      because engine/include was never added to its /I path.
+        //      Final Game.dll goes into the PROJECT's own bin/, not the
+        //      disposable build/ tree - projects are meant to be
+        //      self-contained. ----
         {
             "label": "Build SampleGame (Debug)",
             "type": "shell",
@@ -152,6 +168,9 @@
             ],
             "group": "build"
         },
+        // ---- Deploys the shared Runtime.exe into the project's own
+        //      bin/, renamed - same idea the Editor's future
+        //      "New Project" flow will automate per project. ----
         {
             "label": "Deploy Runtime -> SampleGame",
             "type": "shell",
