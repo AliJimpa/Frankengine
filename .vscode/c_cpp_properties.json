@@ -3,8 +3,11 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/include",
-                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/sdk/include",
+                "${workspaceFolder}/engine/include",
+                "${workspaceFolder}/engine/include/**",
+                "${workspaceFolder}/editor/include",
+                "${workspaceFolder}/editor/include/**",
                 "${workspaceFolder}/deps/glfw-3.4.bin.WIN32/include",
                 "${workspaceFolder}/ext/imgui",
                 "${workspaceFolder}/ext/imgui/backends"

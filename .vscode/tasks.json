@@ -7,33 +7,27 @@
             "command": "cmd.exe",
             "args": [
                 "/c",
-                "if not exist build\\Debug\\Intermediate\\Engine mkdir build\\Debug\\Intermediate\\Engine & if not exist build\\Debug\\Intermediate\\Runtime mkdir build\\Debug\\Intermediate\\Runtime & if not exist build\\Debug\\Intermediate\\Editor mkdir build\\Debug\\Intermediate\\Editor & if not exist build\\Debug\\Intermediate\\SampleGame mkdir build\\Debug\\Intermediate\\SampleGame & if not exist build\\Debug\\Engine mkdir build\\Debug\\Engine & if not exist build\\Debug\\Runtime mkdir build\\Debug\\Runtime & if not exist build\\Debug\\Editor mkdir build\\Debug\\Editor & if not exist build\\Debug\\SampleGame mkdir build\\Debug\\SampleGame"
+                "if not exist build\\Debug\\obj\\Engine mkdir build\\Debug\\obj\\Engine & if not exist build\\Debug\\obj\\Runtime mkdir build\\Debug\\obj\\Runtime & if not exist build\\Debug\\obj\\Editor mkdir build\\Debug\\obj\\Editor & if not exist build\\Debug\\obj\\SampleGame mkdir build\\Debug\\obj\\SampleGame & if not exist build\\Debug\\bin\\Engine mkdir build\\Debug\\bin\\Engine & if not exist build\\Debug\\bin\\Runtime mkdir build\\Debug\\bin\\Runtime & if not exist build\\Debug\\bin\\Editor mkdir build\\Debug\\bin\\Editor & if not exist projects\\SampleGame\\bin mkdir projects\\SampleGame\\bin"
             ],
             "problemMatcher": []
         },
+
+        // ---- Engine (static lib). Only sees sdk/include - it's the one
+        //      that IMPLEMENTS GetEngineAPI(), it doesn't need its own
+        //      Engine/core headers to do that. ----
         {
             "label": "Compile Engine (Debug)",
             "type": "shell",
             "command": "cl.exe",
             "args": [
-                "/c",
-                "/EHsc",
-                "/Zi",
-                "/MDd",
-                "/FS",
-                "/std:c++17",
-                "/I",
-                "include",
-                "/Fo:build\\Debug\\Intermediate\\Engine\\",
-                "/Fd:build\\Debug\\Intermediate\\Engine\\Engine.pdb",
-                "src\\engine\\EngineAPI.cpp"
+                "/c", "/EHsc", "/Zi", "/MDd", "/FS", "/std:c++17",
+                "/I", "sdk\\include",
+                "/Fo:build\\Debug\\obj\\Engine\\",
+                "/Fd:build\\Debug\\obj\\Engine\\Engine.pdb",
+                "engine\\src\\EngineAPI.cpp"
             ],
-            "dependsOn": [
-                "Prepare Build Folders"
-            ],
-            "problemMatcher": [
-                "$msCompile"
-            ],
+            "dependsOn": ["Prepare Build Folders"],
+            "problemMatcher": ["$msCompile"],
             "group": "build"
         },
         {
@@ -41,65 +35,54 @@
             "type": "shell",
             "command": "lib.exe",
             "args": [
-                "/OUT:build\\Debug\\Engine\\Engine.lib",
-                "build\\Debug\\Intermediate\\Engine\\EngineAPI.obj"
+                "/OUT:build\\Debug\\bin\\Engine\\Engine.lib",
+                "build\\Debug\\obj\\Engine\\EngineAPI.obj"
             ],
-            "dependsOn": [
-                "Compile Engine (Debug)"
-            ],
+            "dependsOn": ["Compile Engine (Debug)"],
             "problemMatcher": [],
             "group": "build"
         },
+
+        // ---- Runtime (the player). Only sees sdk/include - it talks to
+        //      the game purely through IGame/EngineAPI, and links
+        //      Engine.lib for the real GetEngineAPI() symbol. ----
         {
             "label": "Build Runtime (Debug)",
             "type": "shell",
             "command": "cl.exe",
             "args": [
-                "/EHsc",
-                "/Zi",
-                "/MDd",
-                "/FS",
-                "/std:c++17",
-                "/I",
-                "include",
-                "/Fo:build\\Debug\\Intermediate\\Runtime\\",
-                "/Fd:build\\Debug\\Intermediate\\Runtime\\Runtime.pdb",
-                "/Fe:build\\Debug\\Runtime\\Runtime.exe",
-                "src\\Kernel\\GameLauncher.cpp",
-                "/link",
-                "build\\Debug\\Engine\\Engine.lib"
+                "/EHsc", "/Zi", "/MDd", "/FS", "/std:c++17",
+                "/I", "sdk\\include",
+                "/Fo:build\\Debug\\obj\\Runtime\\",
+                "/Fd:build\\Debug\\obj\\Runtime\\Runtime.pdb",
+                "/Fe:build\\Debug\\bin\\Runtime\\Runtime.exe",
+                "runtime\\src\\GameLauncher.cpp",
+                "/link", "build\\Debug\\bin\\Engine\\Engine.lib"
             ],
-            "dependsOn": [
-                "Lib Engine (Debug)"
-            ],
-            "problemMatcher": [
-                "$msCompile"
-            ],
+            "dependsOn": ["Lib Engine (Debug)"],
+            "problemMatcher": ["$msCompile"],
             "group": "build"
         },
+
+        // ---- Editor. Sees editor/include + engine/include (it's allowed
+        //      to reach into Engine internals - it's not crossing the
+        //      Game.dll ABI boundary) plus GLFW/ImGui. ----
         {
             "label": "Build Editor (Debug)",
             "type": "shell",
             "command": "cl.exe",
             "args": [
-                "/EHsc",
-                "/Zi",
-                "/MDd",
-                "/FS",
-                "/std:c++17",
-                "/I",
-                "include",
-                "/I",
-                "deps\\glfw-3.4.bin.WIN32\\include",
-                "/I",
-                "ext\\imgui",
-                "/I",
-                "ext\\imgui\\backends",
-                "/Fo:build\\Debug\\Intermediate\\Editor\\",
-                "/Fd:build\\Debug\\Intermediate\\Editor\\Editor.pdb",
-                "/Fe:build\\Debug\\Editor\\Editor.exe",
-                "src\\editor\\Editor.cpp",
-                "src\\editor\\systems\\EditorGUISystem.cpp",
+                "/EHsc", "/Zi", "/MDd", "/FS", "/std:c++17",
+                "/I", "editor\\include",
+                "/I", "engine\\include",
+                "/I", "deps\\glfw-3.4.bin.WIN32\\include",
+                "/I", "ext\\imgui",
+                "/I", "ext\\imgui\\backends",
+                "/Fo:build\\Debug\\obj\\Editor\\",
+                "/Fd:build\\Debug\\obj\\Editor\\Editor.pdb",
+                "/Fe:build\\Debug\\bin\\Editor\\Editor.exe",
+                "editor\\src\\Editor.cpp",
+                "editor\\src\\systems\\EditorGUISystem.cpp",
                 "ext\\imgui\\imgui.cpp",
                 "ext\\imgui\\imgui_draw.cpp",
                 "ext\\imgui\\imgui_tables.cpp",
@@ -107,63 +90,54 @@
                 "ext\\imgui\\imgui_demo.cpp",
                 "ext\\imgui\\backends\\imgui_impl_glfw.cpp",
                 "ext\\imgui\\backends\\imgui_impl_opengl3.cpp",
-                "/link",
-                "build\\Debug\\Engine\\Engine.lib",
+                "/link", "build\\Debug\\bin\\Engine\\Engine.lib",
                 "/LIBPATH:deps\\glfw-3.4.bin.WIN32\\lib-vc2022",
-                "glfw3.lib",
-                "opengl32.lib",
-                "user32.lib",
-                "gdi32.lib",
-                "shell32.lib"
+                "glfw3.lib", "opengl32.lib", "user32.lib", "gdi32.lib", "shell32.lib"
             ],
-            "dependsOn": [
-                "Lib Engine (Debug)"
-            ],
-            "problemMatcher": [
-                "$msCompile"
-            ],
+            "dependsOn": ["Lib Engine (Debug)"],
+            "problemMatcher": ["$msCompile"],
             "group": "build"
         },
+
+        // ---- SampleGame (a project). Only sees sdk/include - the build
+        //      config itself enforces the boundary: it is physically
+        //      impossible for this task to resolve an Engine/... header,
+        //      because engine/include was never added to its /I path.
+        //      Final Game.dll goes into the PROJECT's own bin/, not the
+        //      disposable build/ tree - projects are meant to be
+        //      self-contained. ----
         {
             "label": "Build SampleGame (Debug)",
             "type": "shell",
             "command": "cl.exe",
             "args": [
-                "/EHsc",
-                "/Zi",
-                "/MDd",
-                "/FS",
-                "/std:c++17",
-                "/LD",
-                "/I",
-                "include",
-                "/Fo:build\\Debug\\Intermediate\\SampleGame\\",
-                "/Fd:build\\Debug\\Intermediate\\SampleGame\\SampleGame.pdb",
-                "/Fe:build\\Debug\\SampleGame\\Game.dll",
-                "Projects\\SampleGame\\SampleGame.cpp"
+                "/EHsc", "/Zi", "/MDd", "/FS", "/std:c++17", "/LD",
+                "/I", "sdk\\include",
+                "/Fo:build\\Debug\\obj\\SampleGame\\",
+                "/Fd:build\\Debug\\obj\\SampleGame\\SampleGame.pdb",
+                "/Fe:projects\\SampleGame\\bin\\Game.dll",
+                "projects\\SampleGame\\Source\\SampleGame.cpp"
             ],
-            "dependsOn": [
-                "Prepare Build Folders"
-            ],
-            "problemMatcher": [
-                "$msCompile"
-            ],
+            "dependsOn": ["Prepare Build Folders"],
+            "problemMatcher": ["$msCompile"],
             "group": "build"
         },
+
+        // ---- Deploys the shared Runtime.exe into the project's own
+        //      bin/, renamed - same idea the Editor's future
+        //      "New Project" flow will automate per project. ----
         {
             "label": "Deploy Runtime -> SampleGame",
             "type": "shell",
             "command": "cmd.exe",
             "args": [
                 "/c",
-                "copy /Y build\\Debug\\Runtime\\Runtime.exe build\\Debug\\SampleGame\\SampleGame.exe"
+                "copy /Y build\\Debug\\bin\\Runtime\\Runtime.exe projects\\SampleGame\\bin\\SampleGame.exe"
             ],
-            "dependsOn": [
-                "Build Runtime (Debug)",
-                "Build SampleGame (Debug)"
-            ],
+            "dependsOn": ["Build Runtime (Debug)", "Build SampleGame (Debug)"],
             "problemMatcher": []
         },
+
         {
             "label": "Build All (Debug)",
             "dependsOrder": "sequence",
@@ -171,10 +145,7 @@
                 "Build Editor (Debug)",
                 "Deploy Runtime -> SampleGame"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": { "kind": "build", "isDefault": true }
         }
     ]
 }

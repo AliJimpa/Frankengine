@@ -2,7 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include "SDK/IGame.h"
+#include "IGame.h"
 
 // ============================================================
 //  Runtime.exe

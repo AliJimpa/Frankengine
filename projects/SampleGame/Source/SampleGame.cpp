@@ -1,4 +1,4 @@
-#include "SDK/IGame.h"
+#include "IGame.h"
 
 // ============================================================
 //  SampleGame - minimal Game.dll, compiled separately from the

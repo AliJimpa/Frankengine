@@ -1,82 +1,54 @@
-# FrankEngine - starter skeleton
+# FrankEngine
 
-A minimal, plugin-based C++ game engine:
-
-- **Engine** — static lib (`Engine.lib`), linked into both **Editor.exe** and **Runtime.exe**.
-- **Editor.exe** — ImGui/GLFW/OpenGL editor.
-- **Runtime.exe** — the player. Links Engine statically, but loads the game
-  itself (`Game.dll`) dynamically via `LoadLibrary`, so a project's game code
-  can be rebuilt and re-run without rebuilding the engine.
-- **SDK** (`IGame.h`, `EngineAPI.h`) — the only headers a `Game.dll` needs.
-  This is the contract across the DLL boundary.
-
-## Folder layout
+## Layout
 
 ```
-build/<Debug|Release>/...        compiler output (created by tasks)
-deps/glfw-3.4.bin.WIN32/         put the GLFW binary release here
-ext/imgui/                       put the Dear ImGui source here
-include/SDK/                     IGame.h, EngineAPI.h
-include/Engine/core/             ISubsystem, Application, IDraw, object
-include/Engine/utility/          DeltaTimer
-include/Editor/core/             Editor.h (App/Editor classes)
-include/Editor/system/           EditorGUISystem.h
-include/Editor/UI/Widget/        EditorWidget base + sample widgets
-src/engine/                      Engine static lib sources
-src/editor/                      Editor.exe sources
-src/Kernel/                      GameLauncher.cpp -> Runtime.exe
-games/SampleGame/                example Game.dll implementing IGame
-.vscode/                         tasks.json, launch.json, c_cpp_properties.json
+sdk/include/            IGame.h, EngineAPI.h  - the ONLY thing a project may include
+engine/include/Engine/  ISubsystem, Application, IDraw, object, DeltaTimer
+engine/src/             EngineAPI.cpp (implements GetEngineAPI())
+editor/include/Editor/  Editor.h, EditorGUISystem.h, EditorWidget + sample widgets
+editor/src/             Editor.cpp, EditorGUISystem.cpp
+runtime/src/            GameLauncher.cpp -> Runtime.exe
+projects/SampleGame/    Source/SampleGame.cpp, deployed bin/Game.dll + bin/SampleGame.exe
+deps/                   prebuilt third-party binaries (GLFW) - not included, drop in yourself
+ext/                    third-party source we compile ourselves (Dear ImGui) - drop in yourself
+build/                  100% generated - obj/ (intermediates) + bin/ (Engine.lib/Runtime.exe/Editor.exe)
 ```
-
-`deps/` and `ext/imgui/` are **not** included here — drop in the real GLFW
-3.4 Windows binaries and the Dear ImGui source (both referenced by your
-original tree) at those exact paths and everything else lines up.
 
 ## Building
 
-Requires MSVC (`cl.exe`, `lib.exe`) on PATH — open the project from a
-**Developer Command Prompt / Developer PowerShell for VS 2022**, or run
-`vcvars64.bat` first, then use VS Code's **Terminal → Run Build Task**
-(`Ctrl+Shift+B`), which runs `Build All (Debug)`. That chain:
+Open from a **Developer Command Prompt / Developer PowerShell for VS 2022**
+(needs `cl.exe`/`lib.exe` on PATH), then `Ctrl+Shift+B` runs `Build All (Debug)`:
 
-1. `Prepare Build Folders` — creates the `build/Debug/...` tree
-2. `Compile Engine (Debug)` → `Lib Engine (Debug)` — produces `Engine.lib`
-3. `Build Runtime (Debug)` — links `GameLauncher.cpp` + `Engine.lib` → `Runtime.exe`
-4. `Build Editor (Debug)` — compiles ImGui + GLFW backend + editor sources,
-   links `Engine.lib`, `glfw3.lib`, `opengl32.lib` → `Editor.exe`
-5. `Build SampleGame (Debug)` — compiles `games/SampleGame` as `Game.dll`
-6. `Copy SampleGame -> Runtime` — drops `Game.dll` next to `Runtime.exe` so it runs
+1. `Prepare Build Folders`
+2. `Compile Engine (Debug)` -> `Lib Engine (Debug)` — `build/Debug/bin/Engine/Engine.lib`
+3. `Build Runtime (Debug)` — `build/Debug/bin/Runtime/Runtime.exe`
+4. `Build Editor (Debug)` — `build/Debug/bin/Editor/Editor.exe`
+5. `Build SampleGame (Debug)` — `projects/SampleGame/bin/Game.dll`
+6. `Deploy Runtime -> SampleGame` — copies `Runtime.exe` into
+   `projects/SampleGame/bin/SampleGame.exe`
 
-Run/debug via **Run and Debug** (`F5`): "Debug Editor" or "Debug Runtime".
+Debug via `F5`: **Debug Editor** or **Debug SampleGame**.
 
-## What was fixed from the first draft
+## Why the /I include paths per task matter
 
-- **`Editor.h`** had a stray free function (`Initiation()`) referencing
-  `MyUI`/`this` outside of any class — didn't compile. Removed.
-- **`App::run()`** called `GetUI()->init()/render()/shutdown()`, none of
-  which existed (`EditorGUISystem` has `Initialize()/Update()/Shutdown()`
-  from `ISubsystem`, and they were `private`). `App` now calls the
-  `ISubsystem` names, and they're `public` on `EditorGUISystem`.
-- **`EditorGUISystem.h`** included `"imGUI.h"` (wrong case/name) — fixed to
-  `<imgui.h>`, and `EditorWidget.h` (referenced but never provided) was
-  added under `include/Editor/UI/Widget/Base/`.
-- **`DeltaTimer.h`** was missing `#pragma once`.
-- **`GameLauncher.cpp`**: since Engine is now a static lib linked directly
-  into `Runtime.exe`, the `LoadLibrary("EngineRuntime.dll")` step for the
-  engine itself is gone — `GetEngineAPI()` is just a normal function call.
-  Only `Game.dll` is still loaded dynamically. Its include path
-  (`"SDK/IGame.h"`) now matches the real `include/SDK/IGame.h` location.
-  Its loop also used `Sleep(1000)` (1 update/sec) — changed to ~60/sec.
-- **`EngineAPI.h`**'s `__declspec(dllexport/dllimport)` macro assumed
-  Engine was a DLL. Since it's a static lib now, that's gone — no export
-  boundary needed for a statically-linked function.
+Each compile task in `tasks.json` only adds the `/I` roots that module is
+actually allowed to see:
 
-## Next steps worth doing
+| Task | `/I` roots | Can reach `engine/include`? |
+|---|---|---|
+| Engine | `sdk/include` | no (doesn't need it) |
+| Runtime | `sdk/include` | no (talks to Engine only via `EngineAPI*`) |
+| Editor | `editor/include`, `engine/include` | yes (not crossing the Game.dll ABI boundary) |
+| SampleGame (project) | `sdk/include` | **no - and this is enforced by the build, not just convention** |
 
-- Add a real `RenderSystem`/`IDraw` pipeline instead of just clearing the
-  screen in `EditorGUISystem::Render()`.
-- Give the Editor a "New Project" flow that copies `Runtime.exe` +
-  `Engine.lib`'s dependencies into a project folder, per your original plan.
-- Add a "Play" button in the editor that rebuilds the current project's
-  `Game.dll` and launches `Runtime.exe` next to it.
+That last row is the point of the restructure: a project physically cannot
+`#include "Engine/core/Application.h"` and have it compile, because
+`engine/include` was never added to its task. If it needs more capability
+from the Engine, the fix is to grow `EngineAPI` in `sdk/include/EngineAPI.h`
+— see `project-include-boundaries.md` from earlier for why.
+
+Note: `c_cpp_properties.json` (IntelliSense only) includes every module's
+headers for convenient browsing/autocomplete — that's just editor tooling
+and doesn't affect what actually compiles; the real boundary is enforced
+per-task in `tasks.json`.

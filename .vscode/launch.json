@@ -5,27 +5,18 @@
             "name": "Debug Editor",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/Editor/Editor.exe",
+            "program": "${workspaceFolder}/build/Debug/bin/Editor/Editor.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/build/Debug/Editor",
+            "cwd": "${workspaceFolder}/build/Debug/bin/Editor",
             "preLaunchTask": "Build Editor (Debug)"
-        },
-        {
-            "name": "Debug Runtime",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/Runtime/Runtime.exe",
-            "args": [],
-            "cwd": "${workspaceFolder}/build/Debug/Runtime",
-            "preLaunchTask": "Copy SampleGame -> Runtime"
         },
         {
             "name": "Debug SampleGame",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/SampleGame/SampleGame.exe",
+            "program": "${workspaceFolder}/projects/SampleGame/bin/SampleGame.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/build/Debug/SampleGame",
+            "cwd": "${workspaceFolder}/projects/SampleGame/bin",
             "preLaunchTask": "Deploy Runtime -> SampleGame"
         }
     ]
