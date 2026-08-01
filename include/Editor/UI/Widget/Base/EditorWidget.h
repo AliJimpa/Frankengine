@@ -1,20 +1,22 @@
 #pragma once
-#include "IDraw.h"
 
 class EditorGUISystem;
-class UISetting;
 
-class EditorWidget : public IDraw
+// ============================================================
+//  EditorWidget - base class for every ImGui panel/window shown
+//  in the editor. Create one, register it with
+//  EditorGUISystem::CreateWidget<T>(), and it gets drawn every
+//  frame inside its own ImGui::Begin()/End() window.
+// ============================================================
+class EditorWidget
 {
-private:
-    EditorGUISystem *MyOwner;
-
 public:
-    EditorWidget(EditorGUISystem *owner) : MyOwner(owner) {};
+    explicit EditorWidget(EditorGUISystem* owner) : Owner(owner) {}
+    virtual ~EditorWidget() = default;
 
-public: // IDraw Interface
-    virtual void Draw() = 0;
+    virtual void OnDraw() = 0;
+    virtual const char* GetName() const = 0;
 
 protected:
-    const EditorGUISystem *GetOwner() const { return MyOwner; }
+    EditorGUISystem* Owner;
 };

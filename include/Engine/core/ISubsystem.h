@@ -1,5 +1,9 @@
 #pragma once
 
+// ============================================================
+//  ISubsystem - anything registered and driven by the main loop
+//  (e.g. EditorGUISystem, a future RenderSystem, AudioSystem...)
+// ============================================================
 class ISubsystem
 {
 public:

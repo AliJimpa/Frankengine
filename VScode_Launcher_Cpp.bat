@@ -1,7 +1,7 @@
 @echo off
 
 REM Path to Visual Studio 2022 Developer Command Prompt
-set "VS2022_DEV_CMD=C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\Common7\Tools\VsDevCmd.bat"
+set "VS2022_DEV_CMD=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat"
 
 REM Check if the developer command prompt exists
 if exist "%VS2022_DEV_CMD%" (

@@ -1,20 +1,21 @@
 #pragma once
-
-#include "EditorWidget.h"
+#include "Editor/UI/Widget/Base/EditorWidget.h"
+#include <imgui.h>
 
 class W_Demo : public EditorWidget
 {
 public:
-    bool IsOpen = false;
-    W_Demo(EditorGUISystem *owner) : EditorWidget(owner) {}
+    using EditorWidget::EditorWidget;
 
-    void Draw() override
+    const char* GetName() const override { return "Demo"; }
+
+    void OnDraw() override
     {
-        if (IsOpen)
-            ImGui::ShowDemoWindow(&IsOpen);
-
-        ImGui::Begin("DemoTry");
-        ImGui::Checkbox("ShowDemoWindow", &IsOpen);
-        ImGui::End();
+        ImGui::Checkbox("Enabled", &enabled);
+        ImGui::SliderFloat("Value", &value, 0.0f, 1.0f);
     }
+
+private:
+    bool enabled = true;
+    float value = 0.5f;
 };
