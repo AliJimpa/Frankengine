@@ -7,7 +7,7 @@
 #include "imgui_impl_opengl3.h"
 #include <cstdio>
 
-void EditorGUISystem::glfw_error_callback(int error, const char* description)
+void EditorGUISystem::glfw_error_callback(int error, const char *description)
 {
     std::fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
@@ -50,7 +50,7 @@ void EditorGUISystem::Render()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    for (EditorWidget* widget : MyWidgets)
+    for (EditorWidget *widget : MyWidgets)
     {
         if (ImGui::Begin(widget->GetName()))
             widget->OnDraw();
@@ -71,7 +71,7 @@ void EditorGUISystem::Render()
 
 void EditorGUISystem::Shutdown()
 {
-    for (EditorWidget* widget : MyWidgets)
+    for (EditorWidget *widget : MyWidgets)
         delete widget;
     MyWidgets.clear();
 
