@@ -70,3 +70,5 @@ Testing/
 
 # Frankengine Project
 !/Library/OpenGL/glfw3.lib
+!/tests/OpenGL/glfw3.dll
+!/tests/OpenGL/glfw3dll.lib

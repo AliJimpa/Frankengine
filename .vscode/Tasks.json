@@ -63,7 +63,7 @@
                 "cwd": "${workspaceFolder}"
             },
             "group": "build",
-            "detail": "Start Applicatiion by cmd"
+            "detail": "Start Application"
         }
     ]
 }
