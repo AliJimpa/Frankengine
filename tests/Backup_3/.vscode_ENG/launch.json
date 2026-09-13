@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Editor",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/bin/Editor/Editor.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/build/Debug/bin/Editor",
+            "preLaunchTask": "Build Editor (Debug)"
+        },
+        {
+            "name": "Debug SampleGame",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/projects/SampleGame/bin/SampleGame.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/projects/SampleGame/bin",
+            "preLaunchTask": "Deploy Runtime -> SampleGame"
+        },
+        {
+            "name": "Debug SampleGame",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/SampleGame/SampleGame.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/build/Debug/SampleGame",
+            "preLaunchTask": "Deploy Runtime -> SampleGame"
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Preparing",
+            "type": "shell",
+            "command": "cmd.exe",
+            "args": [
+                "/c",
+                "if not exist Intermediate\\Development mkdir Intermediate\\Development & if not exist Intermediate\\Shipping mkdir Intermediate\\Shipping"
+            ],
+        },
+        {
+            "label": "Cooking",
+            "type": "shell",
+            "command": "cmd.exe",
+            "args": [
+                "/c",
+                "if not exist Packaging\\Development mkdir Packaging\\Development & if not exist Packaging\\Shipping mkdir Packaging\\Shipping"
+            ],
+            "dependsOn": [
+                "Preparing"
+            ],
+        },
+        {
+            "label": "Play",
+            "type": "shell",
+            "command": "cl.exe",
+            "args": [
+                "/c",
+                "/EHsc",
+                "/Zi",
+                "/MDd",
+                "/FS",
+                "/std:c++17",
+                "/I",
+                "Assets",
+                "Library\\Rendering",
+                "Library",
+                "/Fo:Intermediate\\Development\\",
+                "/Fd:Intermediate\\Development\\Project.pdb",
+                "Assets\\main.cpp"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build"
+        }
+    ]
+}

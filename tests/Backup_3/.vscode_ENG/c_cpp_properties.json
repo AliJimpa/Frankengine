@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                // "${workspaceFolder}/sdk/include",
+                // "${workspaceFolder}/engine/include",
+                // "${workspaceFolder}/engine/include/**",
+                // "${workspaceFolder}/editor/include",
+                // "${workspaceFolder}/editor/include/**",
+                // "${workspaceFolder}/deps/glfw-3.4.bin.WIN32/include",
+                // "${workspaceFolder}/ext/imgui",
+                // "${workspaceFolder}/ext/imgui/backends"
+            ],
+            "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,42 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Development",
+            "type": "shell",
+            "command": "${workspaceFolder}/build.sh",
+            "args": ["Development"],
+            "windows": {
+                "command": "${workspaceFolder}\\build.bat",
+                "args": ["Development"]
+            },
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": ["$gcc"],
+            "presentation": { "reveal": "always", "panel": "shared" }
+        },
+        {
+            "label": "Build Shipping",
+            "type": "shell",
+            "command": "${workspaceFolder}/build.sh",
+            "args": ["Shipping"],
+            "windows": {
+                "command": "${workspaceFolder}\\build.bat",
+                "args": ["Shipping"]
+            },
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "presentation": { "reveal": "always", "panel": "shared" }
+        },
+        {
+            "label": "Clean Intermediate",
+            "type": "shell",
+            "command": "rm",
+            "args": ["-rf", "${workspaceFolder}/Intermediate/Development", "${workspaceFolder}/Intermediate/Shipping"],
+            "windows": {
+                "command": "cmd",
+                "args": ["/c", "if exist \"${workspaceFolder}\\Intermediate\" (rmdir /s /q \"${workspaceFolder}\\Intermediate\" & mkdir \"${workspaceFolder}\\Intermediate\")"]
+            },
+            "problemMatcher": []
+        }
+    ]
+}

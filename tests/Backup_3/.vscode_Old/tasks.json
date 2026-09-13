@@ -1,0 +1,628 @@
+{
+    "tasks": [
+        // Folder Structure
+        {
+            "type": "shell",
+            "label": "Generate Common Standard Folder Structure",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "mkdir src",
+                "src\\core",
+                "src\\systems",
+                "src\\utils",
+                "include",
+                "include\\${workspaceFolderBasename}",
+                "include\\${workspaceFolderBasename}\\core",
+                "include\\${workspaceFolderBasename}\\systems",
+                "include\\${workspaceFolderBasename}\\utils",
+                "libs",
+                "external",
+                "assets",
+                "build",
+                "build\\Release",
+                "build\\Debug",
+                "build\\GPP",
+                "tests",
+                "docs"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "detail": "Create all folder need for cpp prject"
+        },
+        {
+            "type": "shell",
+            "label": "Clear Build (Debug)",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "del /Q build\\Debug\\* & for /d %i in (build\\Debug\\*) do rmdir /S /Q \"%i\""
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "detail": "Deletes all files and subdirectories inside a folder without deleting the folder itself."
+        },
+        // PreProcess
+        {
+            "type": "shell",
+            "label": "PreProcess To File (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/E",
+                "/P",
+                "${workspaceFolder}/src/*.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}\\build\\Debug"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Preprocess To File [ActiveFile] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/P",
+                "${workspaceFolder}/src/${fileBasename}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}\\build\\Debug"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Preprocess To File [ActiveFile] (GPP)",
+            "command": "C:\\Program Files\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-E",
+                "${file}",
+                "-o",
+                "${workspaceFolder}/build/Debug/${fileBasenameNoExtension}.i"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(g++) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        // Assembly
+        {
+            "type": "shell",
+            "label": "Assembler Output [Only Listing] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/FA",
+                "${workspaceFolder}/src/*.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}\\build\\Debug"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Assembler Output [Only Listing] [ActiveFile] (GPP)",
+            "command": "C:\\Program Files\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-S",
+                "${file}",
+                "-o",
+                "${workspaceFolder}/build/GPP/${fileBasenameNoExtension}.asm"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(g++) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "cppbuild",
+            "label": "Disassamble [ActiveFile] (GPP)",
+            "command": "C:\\Program Files\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-S",
+                "${file}",
+                "-o",
+                "${workspaceFolder}/build/GPP/${fileBasenameNoExtension}.s"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "Compiler(g++) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        // Precompile
+        {
+            "type": "shell",
+            "label": "Precompile [ActiveFile] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/Yc",
+                "${workspaceFolder}/src/${fileBasename}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}\\build\\Debug"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Precompile [ActiveFile] (GPP)",
+            "command": "C:\\Program Files\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-x",
+                "c++-header",
+                "${file}",
+                "-o",
+                "${workspaceFolder}/build/GPP/${fileBasenameNoExtension}.gch"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(g++) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        // Build
+        {
+            "type": "cppbuild",
+            "label": "Build [Include] [ActiveFile] (GPP)",
+            "command": "C:\\Program Files\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-I",
+                "${file}",
+                "-g",
+                "${file}",
+                "-o",
+                "${workspaceFolder}/build/GPP/${workspaceFolderBasename}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "Compiler(g++) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "cppbuild",
+            "label": "Build [ActiveFile] (GPP)",
+            "command": "C:\\Program Files\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compiler(g++) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "cppbuild",
+            "label": "Build [main.cpp] [OpenGL] (GPP)",
+            "command": "C:\\Program Files\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-g",
+                "${workspaceFolder}\\src\\main.cpp",
+                "-o",
+                "${workspaceFolder}/build/GPP/${workspaceFolderBasename}",
+                "-I",
+                "libs\\GLFW\\include",
+                "-L",
+                "libs\\GLFW\\lib-vc2022"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "Compiler(g++) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Build [Project] [OpenGL] [Imgui] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/W4",
+                "/EHsc",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\core",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\systems",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\utils",
+                "/I${workspaceFolder}\\external",
+                "/I${workspaceFolder}\\libs\\GLFW\\include",
+                "/I${workspaceFolder}\\libs\\GLEW\\include",
+                "/I${workspaceFolder}\\build\\Debug",
+                "/Fo${workspaceFolder}\\build\\Debug\\",
+                "/Fe${workspaceFolder}\\build\\Debug\\${workspaceFolderBasename}.exe",
+                "${workspaceFolder}\\libs\\GLFW/lib-vc2022\\glfw3dll.lib",
+                "${workspaceFolder}\\libs\\GLEW/lib\\glew32s.lib",
+                "${workspaceFolder}/external/imgui/*.cpp",
+                "${workspaceFolder}/external/imgui/backends/imgui_impl_glfw.cpp",
+                "${workspaceFolder}/external/imgui/backends/imgui_impl_opengl2.cpp",
+                "opengl32.lib",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/src/core/*.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Build [Project] (Release)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/W4",
+                "/EHsc",
+                "/MD",
+                "/DPREDEBUG",
+                "/O2",
+                "/I${workspaceFolder}\\build\\Release",
+                "/Fo${workspaceFolder}\\build\\Release\\",
+                "/Fe${workspaceFolder}\\build\\Release\\${workspaceFolderBasename}.exe",
+                "${workspaceFolder}/src/*.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Release) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Build [Project] [OpenGL] [Imgui] [Subsystem] (Release)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/W4",
+                "/EHsc",
+                "/D_UNICODE",
+                "/DUNICODE",
+                "/MD",
+                "/DPREDEBUG",
+                "/O2",
+                "/I${workspaceFolder}\\libs\\GLFW\\include",
+                "/I${workspaceFolder}\\build\\Release",
+                "/Fo${workspaceFolder}\\build\\Release\\",
+                "/Fe${workspaceFolder}\\build\\Release\\${workspaceFolderBasename}.exe",
+                "${workspaceFolder}\\libs\\GLFW/lib-vc2022\\glfw3dll.lib",
+                "${workspaceFolder}/external/imgui/*.cpp",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/src/core/*.cpp",
+                "/link",
+                "/SUBSYSTEM:WINDOWS",
+                "User32.libs",
+                "Gdi32.libs"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Release) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Build [UsePrecompile] (Release)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/W4",
+                "/EHsc",
+                "/MD",
+                "/DPREDEBUG",
+                "/O2",
+                "/Yu",
+                "/I${workspaceFolder}\\build\\Release",
+                "/Fo${workspaceFolder}\\build\\Release\\",
+                "/Fe${workspaceFolder}\\build\\Release\\${workspaceFolderBasename}.exe",
+                "${workspaceFolder}/src/*.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Release) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Build [MFC] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/W4",
+                "/EHsc",
+                "/MD",
+                "/D_UNICODE",
+                "/DUNICODE",
+                "/D_AFXDLL",
+                "/I${workspaceFolder}\\build\\Debug",
+                "/Fo${workspaceFolder}\\build\\Debug\\",
+                "/Fe${workspaceFolder}\\build\\Debug\\${workspaceFolderBasename}.exe",
+                "${workspaceFolder}/src/*.cpp",
+                "/link",
+                "mfcs140u.libs",
+                "myfile.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "cppbuild",
+            "label": "Build [ActiveFile] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/EHsc",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\core",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\systems",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\utils",
+                "/Fo${workspaceFolder}\\build\\Debug\\",
+                "/Fe${workspaceFolder}\\build\\Debug\\${fileBasenameNoExtension}.exe",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "cppbuild",
+            "label": "Build [ActiveFile] [Advance] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/Zi",
+                "/EHsc",
+                "/nologo",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\core",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\systems",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\utils",
+                "/Fo${workspaceFolder}\\build\\Debug\\",
+                "/Fe${workspaceFolder}\\build\\Debug\\${fileBasenameNoExtension}.exe",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Build [Project] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/EHsc",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\core",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\systems",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\utils",
+                "/I${workspaceFolder}\\build\\Debug",
+                "/Fo${workspaceFolder}\\build\\Debug\\",
+                "/Fe${workspaceFolder}\\build\\Debug\\${workspaceFolderBasename}.exe",
+                "${workspaceFolder}/src/*.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Build [Project] [Advance] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/W4",
+                "/EHsc",
+                "/MD",
+                "/D_UNICODE",
+                "/DUNICODE",
+                "/D_AFXDLL",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\core",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\systems",
+                "/I${workspaceFolder}\\include\\${workspaceFolderBasename}\\utils",
+                "/I${workspaceFolder}\\build\\Debug",
+                "/Fo${workspaceFolder}\\build\\Debug\\",
+                "/Fe${workspaceFolder}\\build\\Debug\\${workspaceFolderBasename}.exe",
+                "${workspaceFolder}/src/*.cpp",
+                "/link"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        // Compile
+        {
+            "type": "cppbuild",
+            "label": "Compile [Object] [ActiveFile] (GPP)",
+            "command": "C:\\Program Files\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-c",
+                "${file}",
+                "-o",
+                "${workspaceFolder}/build/GPP/${fileBasenameNoExtension}.o"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "Compiler(g++) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        {
+            "type": "shell",
+            "label": "Compile [UsePrecompile] [ActiveFile] (GPP)",
+            "command": "C:\\Program Files\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-std=c++11",
+                "${workspaceFolder}\\src\\${fileBasenameNoExtension}.cpp"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(g++) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        // Library
+        {
+            "type": "shell",
+            "label": "Create Librarry [ActiveFile] (Debug)",
+            "command": "cl.exe",
+            "args": [
+                "/LD${fileBasename}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": "build",
+            "detail": "Compiler(CL) , SolutionConfg(Debug) , Platform(Win32[x86])"
+        },
+        // Run Application
+        {
+            "type": "shell",
+            "label": "Run Application (Debug)",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "start ${workspaceFolder}\\build\\Debug\\${workspaceFolderBasename}.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "detail": "Start Applicatiion by cmd"
+        },
+        {
+            "type": "shell",
+            "label": "Run Application (Release)",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "start ${workspaceFolder}\\build\\Release\\${workspaceFolderBasename}.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "detail": "Start Applicatiion by cmd"
+        },
+        {
+            "type": "shell",
+            "label": "Run Application (GPP)",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "start ${workspaceFolder}\\build\\GPP\\${workspaceFolderBasename}.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "detail": "Start Applicatiion by cmd"
+        },
+    ],
+    "version": "2.0.0"
+}

@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Play as Launch",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Packaging/Development/${workspaceFolderBasename}.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/Intermediate/Development",
+            "preLaunchTask": "Play"
+        }
+    ]
+}

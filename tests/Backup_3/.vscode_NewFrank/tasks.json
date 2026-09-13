@@ -1,0 +1,84 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Make bin dir",
+            "type": "shell",
+            "command": "mkdir",
+            "args": ["-p", "${workspaceFolder}/bin"],
+            "windows": {
+                "command": "cmd",
+                "args": ["/c", "if not exist \"${workspaceFolder}\\bin\" mkdir \"${workspaceFolder}\\bin\""]
+            },
+            "problemMatcher": [],
+            "detail": "Ensures bin/ exists before linking."
+        },
+        {
+            "label": "Build (g++)",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "-std=c++17",
+                "-Wall",
+                "-Wextra",
+                "-g",
+                "-I${workspaceFolder}/src",
+                "${workspaceFolder}/src/main.cpp",
+                "${workspaceFolder}/src/ProjectManager.cpp",
+                "${workspaceFolder}/src/Registry.cpp",
+                "${workspaceFolder}/src/TemplateFiles.cpp",
+                "-o",
+                "${workspaceFolder}/bin/CppProjectManager"
+            ],
+            "windows": {
+                "args": [
+                    "-std=c++17",
+                    "-Wall",
+                    "-Wextra",
+                    "-g",
+                    "-I${workspaceFolder}/src",
+                    "${workspaceFolder}/src/main.cpp",
+                    "${workspaceFolder}/src/ProjectManager.cpp",
+                    "${workspaceFolder}/src/Registry.cpp",
+                    "${workspaceFolder}/src/TemplateFiles.cpp",
+                    "-o",
+                    "${workspaceFolder}/bin/CppProjectManager.exe"
+                ]
+            },
+            "dependsOn": ["Make bin dir"],
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": ["$gcc"],
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "detail": "Compiles the manager tool directly with g++ (no CMake needed)."
+        },
+        {
+            "label": "Configure (CMake)",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["-B", "${workspaceFolder}/build", "-S", "${workspaceFolder}"],
+            "problemMatcher": [],
+            "detail": "Generates build files via CMake into ./build"
+        },
+        {
+            "label": "Build (CMake)",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--build", "${workspaceFolder}/build"],
+            "dependsOn": ["Configure (CMake)"],
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Builds using the CMakeLists.txt at the project root."
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "rm",
+            "args": ["-rf", "${workspaceFolder}/bin", "${workspaceFolder}/build"],
+            "windows": {
+                "command": "cmd",
+                "args": ["/c", "if exist \"${workspaceFolder}\\bin\" rmdir /s /q \"${workspaceFolder}\\bin\" & if exist \"${workspaceFolder}\\build\" rmdir /s /q \"${workspaceFolder}\\build\""]
+            },
+            "problemMatcher": []
+        }
+    ]
+}
