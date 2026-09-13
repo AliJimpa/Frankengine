@@ -20,7 +20,9 @@ set "PROJECT_DIR=%~1"
 if "%PROJECT_DIR:~-1%"=="\" set "PROJECT_DIR=%PROJECT_DIR:~0,-1%"
 set "OUTPUT_DIR=%~2"
 set "EXE_NAME=%~3"
-if "%EXE_NAME%"=="" set "EXE_NAME=Game.exe"
+if "%EXE_NAME%"=="" (
+    for %%P in ("%PROJECT_DIR%") do set "EXE_NAME=%%~nxP.exe"
+)
 
 set "INTERMEDIATE_DIR=%PROJECT_DIR%\Intermediate"
 set "LIBRARY_DIR=%PROJECT_DIR%\Library"

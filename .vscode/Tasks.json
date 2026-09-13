@@ -35,8 +35,8 @@
             "command": "${workspaceFolder}\\build.bat",
             "args": [
                 "${workspaceFolder}",
-                "${workspaceFolder}\\Save\\Build",
-                "MyGame.exe"
+                "${workspaceFolder}\\Save\\Launch",
+                "${workspaceFolderBasename}.exe"
             ],
             "group": {
                 "kind": "build",
@@ -50,6 +50,20 @@
                 "reveal": "always",
                 "panel": "shared"
             }
+        },
+        {
+            "type": "shell",
+            "label": "Run",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "start ${workspaceFolder}\\Save\\Launch\\${workspaceFolderBasename}.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "detail": "Start Applicatiion by cmd"
         }
     ]
 }

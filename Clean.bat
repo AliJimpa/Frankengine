@@ -4,7 +4,7 @@ setlocal
 :: ============================================================
 :: clean.bat
 :: Deletes and recreates <ProjectRoot>\Intermediate and
-:: <ProjectRoot>\Save\Build so the next build starts fresh.
+:: <ProjectRoot>\Save\Launch so the next build starts fresh.
 ::
 :: Usage:
 ::   clean.bat "C:\Path\To\ProjectRoot"
@@ -17,7 +17,7 @@ if "%~1"=="" (
 
 set "PROJECT_DIR=%~1"
 set "INTERMEDIATE_DIR=%PROJECT_DIR%\Intermediate"
-set "BUILD_DIR=%PROJECT_DIR%\Save\Build"
+set "BUILD_DIR=%PROJECT_DIR%\Save\Launch"
 
 echo ============================================================
 echo Cleaning: %INTERMEDIATE_DIR%
