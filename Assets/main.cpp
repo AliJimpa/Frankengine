@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Library/OpenGl/glfw3.h"
+#include "Library/OpenGL_Static_x86/glfw3.h"
 
 #define LOG(x) std::cout << x << std::endl
 
