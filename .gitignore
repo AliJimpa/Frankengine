@@ -69,6 +69,6 @@ Testing/
 .cache/
 
 # Frankengine Project
-!/Library/OpenGL_Static_x86/glfw3.lib
-!/tests/OpenGL_Dynamic_x86/glfw3.dll
-!/tests/OpenGL_Dynamic_x86/glfw3dll.lib
+!/Library/OpenGL_static_x86/glfw3.lib
+!/tests/OpenGL_dynamic_x86/glfw3.dll
+!/tests/OpenGL_dynamic_x86/glfw3dll.lib
