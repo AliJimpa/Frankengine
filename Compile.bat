@@ -1,6 +1,12 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: --- ANSI colors (works in VSCode terminal / Windows Terminal / modern cmd) ---
+for /f %%a in ('echo prompt $E^| cmd') do set "ESC=%%a"
+set "RED=%ESC%[91m"
+set "GREEN=%ESC%[92m"
+set "RESET=%ESC%[0m"
+
 :: ============================================================
 :: compile.bat
 :: Compiles every .cpp under <ProjectRoot>\Assets into .obj files
@@ -66,10 +72,23 @@ for /r "%ASSETS_DIR%" %%F in (*.cpp) do (
     set "PDB=%INTERMEDIATE_DIR%\!RELDIR!%%~nF.pdb"
 
     echo Compiling: %%~nxF
-    cl.exe /c /nologo /EHsc /Zi /FS /Od /MD %INCLUDES% "!SRC!" /Fo"!OBJ!" /Fd"!PDB!"
+    set "CLLOG=%TEMP%\cl_%RANDOM%.log"
+    cl.exe /c /nologo /EHsc /Zi /FS /Od /MD %INCLUDES% "!SRC!" /Fo"!OBJ!" /Fd"!PDB!" > "!CLLOG!" 2>&1
+    set "CLERR=!ERRORLEVEL!"
 
-    if errorlevel 1 (
-        echo    [FAILED] %%~nxF
+    for /f "usebackq delims=" %%L in ("!CLLOG!") do (
+        set "LINE=%%L"
+        echo(!LINE!| findstr /I /C:"error" >nul
+        if not errorlevel 1 (
+            echo !RED!!LINE!!RESET!
+        ) else (
+            echo(!LINE!
+        )
+    )
+    del "!CLLOG!" >nul 2>&1
+
+    if !CLERR! NEQ 0 (
+        echo !RED![FAILED] %%~nxF!RESET!
         set /a FAILED+=1
     ) else (
         set /a COUNT+=1
@@ -77,7 +96,11 @@ for /r "%ASSETS_DIR%" %%F in (*.cpp) do (
 )
 
 echo ============================================================
-echo Done. Compiled: %COUNT%   Failed: %FAILED%
+if %FAILED% GTR 0 (
+    echo !GREEN!Compiled: %COUNT%!RESET!   !RED!Failed: %FAILED%!RESET!
+) else (
+    echo !GREEN!Compiled: %COUNT%   Failed: %FAILED%!RESET!
+)
 echo Object files are in: %INTERMEDIATE_DIR%
 echo ============================================================
 

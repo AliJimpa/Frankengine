@@ -1,6 +1,12 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: --- ANSI colors (works in VSCode terminal / Windows Terminal / modern cmd) ---
+for /f %%a in ('echo prompt $E^| cmd') do set "ESC=%%a"
+set "RED=%ESC%[91m"
+set "GREEN=%ESC%[92m"
+set "RESET=%ESC%[0m"
+
 :: ============================================================
 :: build.bat
 :: Links all .obj files from <ProjectRoot>\Intermediate (and any
@@ -84,10 +90,23 @@ for %%N in ("%EXE_NAME%") do set "EXE_BASENAME=%%~nN"
 :: --- Windows system libs GLFW's Win32/WGL backend needs ---
 set "SYSLIBS=user32.lib gdi32.lib shell32.lib advapi32.lib opengl32.lib"
 
-link.exe /nologo /DEBUG /PDB:"%INTERMEDIATE_DIR%\%EXE_BASENAME%.pdb" /OUT:"%OUTPUT_DIR%\%EXE_NAME%" %LIBPATH% !OBJLIST! !LIBFILES! %SYSLIBS%
+set "LINKLOG=%TEMP%\link_%RANDOM%.log"
+link.exe /nologo /DEBUG /PDB:"%INTERMEDIATE_DIR%\%EXE_BASENAME%.pdb" /OUT:"%OUTPUT_DIR%\%EXE_NAME%" %LIBPATH% !OBJLIST! !LIBFILES! %SYSLIBS% > "!LINKLOG!" 2>&1
+set "LINKERR=!ERRORLEVEL!"
 
-if errorlevel 1 (
-    echo [ERROR] Link step failed.
+for /f "usebackq delims=" %%L in ("!LINKLOG!") do (
+    set "LINE=%%L"
+    echo(!LINE!| findstr /I /C:"error" >nul
+    if not errorlevel 1 (
+        echo !RED!!LINE!!RESET!
+    ) else (
+        echo(!LINE!
+    )
+)
+del "!LINKLOG!" >nul 2>&1
+
+if !LINKERR! NEQ 0 (
+    echo !RED![ERROR] Link step failed.!RESET!
     exit /b 1
 )
 
@@ -104,6 +123,6 @@ if exist "%LIBRARY_DIR%" (
 )
 
 echo ============================================================
-echo Build complete: %OUTPUT_DIR%\%EXE_NAME%
+echo !GREEN!Build complete: %OUTPUT_DIR%\%EXE_NAME%!RESET!
 echo ============================================================
 exit /b 0
