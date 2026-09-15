@@ -65,10 +65,49 @@ if "%OBJLIST%"=="" (
     exit /b 1
 )
 
-:: --- Collect .lib files/paths from Library (including subfolders) ---
+:: --- Read Config\build.ini (or game.ini): per-library skip/dynamic/static ---
+set "LIBCOUNT=0"
+set "INIFILE=%PROJECT_DIR%\Config\build.ini"
+if not exist "%INIFILE%" set "INIFILE=%PROJECT_DIR%\Config\game.ini"
+
+if exist "%INIFILE%" (
+    echo Reading library config: %INIFILE%
+    for /f "usebackq tokens=1,2 delims==" %%A in ("%INIFILE%") do (
+        set "LNAME=%%A"
+        set "LSTATUS=%%B"
+        if not "!LNAME!"=="" if not "!LNAME:~0,1!"==";" if not "!LNAME:~0,1!"=="#" if not "!LNAME:~0,1!"=="[" (
+            set /a LIBCOUNT+=1
+            set "LIB_NAME[!LIBCOUNT!]=!LNAME!"
+            set "LIB_STATUS[!LIBCOUNT!]=!LSTATUS!"
+        )
+    )
+) else (
+    echo [INFO] No Config\build.ini found, using every library under Library\.
+)
+
+:: --- Collect .lib files/paths from Library ---
 set "LIBPATH="
 set "LIBFILES="
-if exist "%LIBRARY_DIR%" (
+if !LIBCOUNT! GTR 0 (
+    for /L %%I in (1,1,!LIBCOUNT!) do (
+        set "LNAME=!LIB_NAME[%%I]!"
+        set "LSTATUS=!LIB_STATUS[%%I]!"
+        set "LDIR=%LIBRARY_DIR%\!LNAME!"
+        if /I "!LSTATUS!"=="skip" (
+            echo [SKIP] !LNAME! ^(status=skip^)
+        ) else if not exist "!LDIR!" (
+            echo !RED![WARN] Library folder not found: !LDIR!!RESET!
+        ) else (
+            for /r "!LDIR!" %%F in (*.lib) do (
+                set "LIBDIR2=%%~dpF"
+                if "!LIBDIR2:~-1!"=="\" set "LIBDIR2=!LIBDIR2:~0,-1!"
+                echo !LIBPATH! | find /I "!LIBDIR2!" >nul
+                if errorlevel 1 set "LIBPATH=!LIBPATH! /LIBPATH:"!LIBDIR2!""
+                set "LIBFILES=!LIBFILES! "%%~nxF""
+            )
+        )
+    )
+) else if exist "%LIBRARY_DIR%" (
     for /r "%LIBRARY_DIR%" %%F in (*.lib) do (
         set "LIBDIR=%%~dpF"
         if "!LIBDIR:~-1!"=="\" set "LIBDIR=!LIBDIR:~0,-1!"
@@ -111,9 +150,21 @@ if !LINKERR! NEQ 0 (
 )
 
 echo ============================================================
-echo Copying DLLs from Library to build folder...
+echo Copying DLLs from dynamic libraries to build folder...
 echo ============================================================
-if exist "%LIBRARY_DIR%" (
+if !LIBCOUNT! GTR 0 (
+    for /L %%I in (1,1,!LIBCOUNT!) do (
+        set "LNAME=!LIB_NAME[%%I]!"
+        set "LSTATUS=!LIB_STATUS[%%I]!"
+        set "LDIR=%LIBRARY_DIR%\!LNAME!"
+        if /I "!LSTATUS!"=="dynamic" if exist "!LDIR!" (
+            for /r "!LDIR!" %%F in (*.dll) do (
+                copy /Y "%%F" "%OUTPUT_DIR%\" >nul
+                echo Copied: %%~nxF ^(!LNAME!^)
+            )
+        )
+    )
+) else if exist "%LIBRARY_DIR%" (
     for /r "%LIBRARY_DIR%" %%F in (*.dll) do (
         copy /Y "%%F" "%OUTPUT_DIR%\" >nul
         echo Copied: %%~nxF

@@ -66,76 +66,13 @@
         },
         ///
         {
-            "label": "ImGui: Compile Core",
+            "label": "ImGui: Build Library",
             "type": "shell",
-            "command": "cl",
+            "command": "${workspaceFolder}\\BuildImGui.bat",
             "args": [
-                "/nologo",
-                "/c",
-                "/EHsc",
-                "/I",
-                "${workspaceFolder}\\Dependency\\imgui\\",
-                "${workspaceFolder}\\Dependency\\imgui\\imgui.cpp",
-                "/Fo:${workspaceFolder}\\Intermediate\\imgui.obj"
+                "${workspaceFolder}"
             ],
             "problemMatcher": "$msCompile",
-            "group": "build"
-        },
-        {
-            "label": "ImGui: Compile GLFW Backend",
-            "type": "shell",
-            "command": "cl",
-            "args": [
-                "/nologo",
-                "/c",
-                "/EHsc",
-                "/I",
-                "${workspaceFolder}\\Dependency\\glfw-3.5.1.bin.WIN32\\include",
-                "/I",
-                "${workspaceFolder}\\Dependency\\imgui\\",
-                "${workspaceFolder}\\Dependency\\imgui\\backends\\imgui_impl_glfw.cpp",
-                "/Fo:${workspaceFolder}\\Intermediate\\imgui_impl_glfw.obj"
-            ],
-            "dependsOn": [
-                "ImGui: Create Intermediate Directory"
-            ],
-            "problemMatcher": "$msCompile",
-            "group": "build"
-        },
-        {
-            "label": "ImGui: Compile OpenGL2 Backend",
-            "type": "shell",
-            "command": "cl",
-            "args": [
-                "/nologo",
-                "/c",
-                "/EHsc",
-                "/I",
-                "${workspaceFolder}\\Dependency\\ImGui",
-                "${workspaceFolder}\\Dependency\\ImGui\\backends\\imgui_impl_opengl2.cpp",
-                "/Fo:${workspaceFolder}\\Intermediate\\imgui_impl_opengl2.obj"
-            ],
-            "problemMatcher": "$msCompile",
-            "group": "build"
-        },
-        {
-            "label": "ImGui: Create Library",
-            "type": "shell",
-            "command": "lib",
-            "args": [
-                "/nologo",
-                "/OUT:${workspaceFolder}\\Library\\imgui_opengl_static\\ImGui.lib",
-                "${workspaceFolder}\\Intermediate\\imgui.obj",
-                "${workspaceFolder}\\Intermediate\\imgui_impl_glfw.obj",
-                "${workspaceFolder}\\Intermediate\\imgui_impl_opengl2.obj"
-            ],
-            "dependsOn": [
-                "ImGui: Compile Core",
-                "ImGui: Compile GLFW Backend",
-                "ImGui: Compile OpenGL2 Backend"
-            ],
-            "dependsOrder": "parallel",
-            "problemMatcher": [],
             "group": {
                 "kind": "build",
                 "isDefault": true

@@ -47,6 +47,33 @@ if errorlevel 1 (
     )
 )
 
+:: --- Read Config\build.ini (or game.ini) to decide /MD vs /MT ---
+set "CRTFLAG=/MD"
+set "STATIC_COUNT=0"
+set "DYNAMIC_COUNT=0"
+set "INIFILE=%PROJECT_DIR%\Config\build.ini"
+if not exist "%INIFILE%" set "INIFILE=%PROJECT_DIR%\Config\game.ini"
+
+if exist "%INIFILE%" (
+    echo Reading library config: %INIFILE%
+    for /f "usebackq tokens=1,2 delims==" %%A in ("%INIFILE%") do (
+        set "LNAME=%%A"
+        set "LSTATUS=%%B"
+        if not "!LNAME!"=="" if not "!LNAME:~0,1!"==";" if not "!LNAME:~0,1!"=="#" if not "!LNAME:~0,1!"=="[" (
+            if /I "!LSTATUS!"=="static"  set /a STATIC_COUNT+=1
+            if /I "!LSTATUS!"=="dynamic" set /a DYNAMIC_COUNT+=1
+        )
+    )
+    if !STATIC_COUNT! GTR 0 set "CRTFLAG=/MT"
+    if !STATIC_COUNT! GTR 0 if !DYNAMIC_COUNT! GTR 0 (
+        echo !RED![WARN] build.ini mixes 'static' and 'dynamic' libraries.!RESET!
+        echo !RED![WARN] Compiling with /MT - dynamic libraries expecting /MD may fail to link.!RESET!
+    )
+) else (
+    echo [INFO] No Config\build.ini found, defaulting to /MD.
+)
+echo Using CRT mode: %CRTFLAG%
+
 :: --- Include dirs: project root ^(for "Library/..." style includes^), Assets, Library ---
 set "INCLUDES=/I"%PROJECT_DIR%""
 set "INCLUDES=%INCLUDES% /I"%ASSETS_DIR%""
@@ -54,7 +81,7 @@ if exist "%LIBRARY_DIR%" set "INCLUDES=%INCLUDES% /I"%LIBRARY_DIR%""
 
 echo ============================================================
 echo Project     : %PROJECT_DIR%
-echo Source      : %ASSETS_DIR%
+echo Assets      : %ASSETS_DIR%
 echo Intermediate: %INTERMEDIATE_DIR%
 echo ============================================================
 
@@ -73,7 +100,7 @@ for /r "%ASSETS_DIR%" %%F in (*.cpp) do (
 
     echo Compiling: %%~nxF
     set "CLLOG=%TEMP%\cl_%RANDOM%.log"
-    cl.exe /c /nologo /EHsc /Zi /FS /Od /MD %INCLUDES% "!SRC!" /Fo"!OBJ!" /Fd"!PDB!" > "!CLLOG!" 2>&1
+    cl.exe /c /nologo /EHsc /Zi /FS /Od %CRTFLAG% %INCLUDES% "!SRC!" /Fo"!OBJ!" /Fd"!PDB!" > "!CLLOG!" 2>&1
     set "CLERR=!ERRORLEVEL!"
 
     for /f "usebackq delims=" %%L in ("!CLLOG!") do (
