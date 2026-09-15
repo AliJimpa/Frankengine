@@ -2,13 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch",
+            "name": "Debug MyGame (MSVC)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\Save\\Launch\\${workspaceFolderBasename}.exe",
+            "program": "${workspaceFolder}\\Binaries\\Win64\\${workspaceFolderBasename}.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}\\Save\\Launch",
+            "cwd": "${workspaceFolder}\\Binaries\\Win64",
             "environment": [],
             "console": "integratedTerminal",
             "preLaunchTask": "Build"

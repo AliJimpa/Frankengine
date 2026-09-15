@@ -14,7 +14,7 @@ set "RESET=%ESC%[0m"
 :: copies every .dll from Library into the target build folder.
 ::
 :: Usage:
-::   build.bat "C:\Path\To\ProjectRoot" "C:\Path\To\BuildOutput" [ExeName.exe]
+::   build.bat "C:\Path\To\ProjectRoot" "C:\Path\To\ProjectRoot\Binaries\Win64" [ExeName.exe]
 :: ============================================================
 
 if "%~2"=="" (
@@ -54,35 +54,63 @@ if errorlevel 1 (
     )
 )
 
-:: --- Collect all .obj files ---
-set "OBJLIST="
-for /r "%INTERMEDIATE_DIR%" %%F in (*.obj) do (
-    set "OBJLIST=!OBJLIST! "%%F""
-)
-
-if "%OBJLIST%"=="" (
-    echo [ERROR] No .obj files found in %INTERMEDIATE_DIR%
-    exit /b 1
-)
-
-:: --- Read Config\build.ini (or game.ini): per-library skip/dynamic/static ---
+:: --- Read Config\build.ini (or game.ini): [Modules] and [Libraries] ---
 set "LIBCOUNT=0"
+set "MODCOUNT=0"
 set "INIFILE=%PROJECT_DIR%\Config\build.ini"
 if not exist "%INIFILE%" set "INIFILE=%PROJECT_DIR%\Config\game.ini"
 
 if exist "%INIFILE%" (
-    echo Reading library config: %INIFILE%
-    for /f "usebackq tokens=1,2 delims==" %%A in ("%INIFILE%") do (
-        set "LNAME=%%A"
-        set "LSTATUS=%%B"
-        if not "!LNAME!"=="" if not "!LNAME:~0,1!"==";" if not "!LNAME:~0,1!"=="#" if not "!LNAME:~0,1!"=="[" (
-            set /a LIBCOUNT+=1
-            set "LIB_NAME[!LIBCOUNT!]=!LNAME!"
-            set "LIB_STATUS[!LIBCOUNT!]=!LSTATUS!"
+    echo Reading build config: %INIFILE%
+    set "SECTION="
+    for /f "usebackq tokens=* delims=" %%R in ("%INIFILE%") do (
+        set "RAW=%%R"
+        if not "!RAW!"=="" if not "!RAW:~0,1!"==";" if not "!RAW:~0,1!"=="#" (
+            if "!RAW:~0,1!"=="[" (
+                set "SECTION=!RAW!"
+            ) else (
+                for /f "tokens=1,2 delims==" %%A in ("!RAW!") do (
+                    if /I "!SECTION!"=="[Libraries]" (
+                        set /a LIBCOUNT+=1
+                        set "LIB_NAME[!LIBCOUNT!]=%%A"
+                        set "LIB_STATUS[!LIBCOUNT!]=%%B"
+                    )
+                    if /I "!SECTION!"=="[Modules]" (
+                        set /a MODCOUNT+=1
+                        set "MOD_NAME[!MODCOUNT!]=%%A"
+                        set "MOD_STATUS[!MODCOUNT!]=%%B"
+                    )
+                )
+            )
         )
     )
 ) else (
-    echo [INFO] No Config\build.ini found, using every library under Library\.
+    echo [INFO] No Config\build.ini found, using all objs and libraries found on disk.
+)
+
+:: --- Collect .obj files from the module folders listed in [Modules] ---
+set "OBJLIST="
+if !MODCOUNT! GTR 0 (
+    for /L %%I in (1,1,!MODCOUNT!) do (
+        set "MNAME=!MOD_NAME[%%I]!"
+        set "MSTATUS=!MOD_STATUS[%%I]!"
+        set "MDIR=%INTERMEDIATE_DIR%\!MNAME!"
+        if /I "!MSTATUS!"=="skip" (
+            echo [SKIP] module !MNAME! ^(status=skip^)
+        ) else if not exist "!MDIR!" (
+            echo !RED![WARN] Module folder not found: !MDIR!!RESET!
+        ) else (
+            echo [MODULE] !MNAME!
+            call :CollectObjs "!MDIR!"
+        )
+    )
+) else (
+    call :CollectObjs "%INTERMEDIATE_DIR%"
+)
+
+if "!OBJLIST!"=="" (
+    echo !RED![ERROR] No .obj files found. Run compile.bat first.!RESET!
+    exit /b 1
 )
 
 :: --- Collect .lib files/paths from Library ---
@@ -98,23 +126,11 @@ if !LIBCOUNT! GTR 0 (
         ) else if not exist "!LDIR!" (
             echo !RED![WARN] Library folder not found: !LDIR!!RESET!
         ) else (
-            for /r "!LDIR!" %%F in (*.lib) do (
-                set "LIBDIR2=%%~dpF"
-                if "!LIBDIR2:~-1!"=="\" set "LIBDIR2=!LIBDIR2:~0,-1!"
-                echo !LIBPATH! | find /I "!LIBDIR2!" >nul
-                if errorlevel 1 set "LIBPATH=!LIBPATH! /LIBPATH:"!LIBDIR2!""
-                set "LIBFILES=!LIBFILES! "%%~nxF""
-            )
+            call :CollectLibs "!LDIR!"
         )
     )
 ) else if exist "%LIBRARY_DIR%" (
-    for /r "%LIBRARY_DIR%" %%F in (*.lib) do (
-        set "LIBDIR=%%~dpF"
-        if "!LIBDIR:~-1!"=="\" set "LIBDIR=!LIBDIR:~0,-1!"
-        echo !LIBPATH! | find /I "!LIBDIR!" >nul
-        if errorlevel 1 set "LIBPATH=!LIBPATH! /LIBPATH:"!LIBDIR!""
-        set "LIBFILES=!LIBFILES! "%%~nxF""
-    )
+    call :CollectLibs "%LIBRARY_DIR%"
 )
 
 echo ============================================================
@@ -158,17 +174,11 @@ if !LIBCOUNT! GTR 0 (
         set "LSTATUS=!LIB_STATUS[%%I]!"
         set "LDIR=%LIBRARY_DIR%\!LNAME!"
         if /I "!LSTATUS!"=="dynamic" if exist "!LDIR!" (
-            for /r "!LDIR!" %%F in (*.dll) do (
-                copy /Y "%%F" "%OUTPUT_DIR%\" >nul
-                echo Copied: %%~nxF ^(!LNAME!^)
-            )
+            call :CopyDlls "!LDIR!" "!LNAME!"
         )
     )
 ) else if exist "%LIBRARY_DIR%" (
-    for /r "%LIBRARY_DIR%" %%F in (*.dll) do (
-        copy /Y "%%F" "%OUTPUT_DIR%\" >nul
-        echo Copied: %%~nxF
-    )
+    call :CopyDlls "%LIBRARY_DIR%" "Library"
 ) else (
     echo [INFO] No Library folder found, skipping DLL copy.
 )
@@ -176,4 +186,41 @@ if !LIBCOUNT! GTR 0 (
 echo ============================================================
 echo !GREEN!Build complete: %OUTPUT_DIR%\%EXE_NAME%!RESET!
 echo ============================================================
+exit /b 0
+
+:: ============================================================
+:: Subroutines (called, not fallen into - script always exits above)
+:: ============================================================
+
+:CollectObjs
+set "_DIR=%~1"
+set "_N=0"
+for /r "%_DIR%" %%F in (*.obj) do (
+    set "OBJLIST=!OBJLIST! "%%F""
+    set /a _N+=1
+)
+echo   -^> found !_N! .obj file^(s^) in %_DIR%
+exit /b 0
+
+:CollectLibs
+set "_DIR=%~1"
+set "_N=0"
+for /r "%_DIR%" %%F in (*.lib) do (
+    set "_LIBDIR=%%~dpF"
+    if "!_LIBDIR:~-1!"=="\" set "_LIBDIR=!_LIBDIR:~0,-1!"
+    echo !LIBPATH! | find /I "!_LIBDIR!" >nul
+    if errorlevel 1 set "LIBPATH=!LIBPATH! /LIBPATH:"!_LIBDIR!""
+    set "LIBFILES=!LIBFILES! "%%~nxF""
+    set /a _N+=1
+)
+echo   -^> found !_N! .lib file^(s^) in %_DIR%
+exit /b 0
+
+:CopyDlls
+set "_DIR=%~1"
+set "_TAG=%~2"
+for /r "%_DIR%" %%F in (*.dll) do (
+    copy /Y "%%F" "%OUTPUT_DIR%\" >nul
+    echo Copied: %%~nxF ^(%_TAG%^)
+)
 exit /b 0

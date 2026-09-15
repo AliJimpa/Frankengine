@@ -35,7 +35,7 @@
             "command": "${workspaceFolder}\\build.bat",
             "args": [
                 "${workspaceFolder}",
-                "${workspaceFolder}\\Save\\Launch",
+                "${workspaceFolder}\\Binaries\\Win64",
                 "${workspaceFolderBasename}.exe"
             ],
             "group": {
@@ -50,19 +50,6 @@
                 "reveal": "always",
                 "panel": "shared"
             }
-        },
-        {
-            "type": "shell",
-            "label": "Run",
-            "command": "cmd",
-            "args": [
-                "/C",
-                "start ${workspaceFolder}\\Save\\Launch\\${workspaceFolderBasename}.exe"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": "build"
         },
         ///
         {

@@ -27,12 +27,19 @@ set "ASSETS_DIR=%PROJECT_DIR%\Assets"
 set "INTERMEDIATE_DIR=%PROJECT_DIR%\Intermediate"
 set "LIBRARY_DIR=%PROJECT_DIR%\Library"
 
+:: Module name = subfolder under \Intermediate that receives the .obj files.
+:: Override with a 2nd argument if you ever compile another source tree.
+set "MODULE_NAME=%~2"
+if "%MODULE_NAME%"=="" set "MODULE_NAME=Project"
+set "OBJ_ROOT=%INTERMEDIATE_DIR%\%MODULE_NAME%"
+
 if not exist "%ASSETS_DIR%" (
     echo [ERROR] Assets folder not found: %ASSETS_DIR%
     exit /b 1
 )
 
 if not exist "%INTERMEDIATE_DIR%" mkdir "%INTERMEDIATE_DIR%"
+if not exist "%OBJ_ROOT%" mkdir "%OBJ_ROOT%"
 
 :: --- Make sure cl.exe is available (MSVC toolchain) ---
 where cl.exe >nul 2>nul
@@ -56,12 +63,18 @@ if not exist "%INIFILE%" set "INIFILE=%PROJECT_DIR%\Config\game.ini"
 
 if exist "%INIFILE%" (
     echo Reading library config: %INIFILE%
-    for /f "usebackq tokens=1,2 delims==" %%A in ("%INIFILE%") do (
-        set "LNAME=%%A"
-        set "LSTATUS=%%B"
-        if not "!LNAME!"=="" if not "!LNAME:~0,1!"==";" if not "!LNAME:~0,1!"=="#" if not "!LNAME:~0,1!"=="[" (
-            if /I "!LSTATUS!"=="static"  set /a STATIC_COUNT+=1
-            if /I "!LSTATUS!"=="dynamic" set /a DYNAMIC_COUNT+=1
+    set "SECTION="
+    for /f "usebackq tokens=* delims=" %%R in ("%INIFILE%") do (
+        set "RAW=%%R"
+        if not "!RAW!"=="" if not "!RAW:~0,1!"==";" if not "!RAW:~0,1!"=="#" (
+            if "!RAW:~0,1!"=="[" (
+                set "SECTION=!RAW!"
+            ) else if /I "!SECTION!"=="[Libraries]" (
+                for /f "tokens=1,2 delims==" %%A in ("!RAW!") do (
+                    if /I "%%B"=="static"  set /a STATIC_COUNT+=1
+                    if /I "%%B"=="dynamic" set /a DYNAMIC_COUNT+=1
+                )
+            )
         )
     )
     if !STATIC_COUNT! GTR 0 set "CRTFLAG=/MT"
@@ -83,6 +96,7 @@ echo ============================================================
 echo Project     : %PROJECT_DIR%
 echo Assets      : %ASSETS_DIR%
 echo Intermediate: %INTERMEDIATE_DIR%
+echo Module      : %MODULE_NAME%  -^>  %OBJ_ROOT%
 echo ============================================================
 
 set COUNT=0
@@ -93,10 +107,10 @@ for /r "%ASSETS_DIR%" %%F in (*.cpp) do (
     set "RELDIR=%%~dpF"
     set "RELDIR=!RELDIR:%ASSETS_DIR%\=!"
 
-    if not exist "%INTERMEDIATE_DIR%\!RELDIR!" mkdir "%INTERMEDIATE_DIR%\!RELDIR!"
+    if not exist "%OBJ_ROOT%\!RELDIR!" mkdir "%OBJ_ROOT%\!RELDIR!"
 
-    set "OBJ=%INTERMEDIATE_DIR%\!RELDIR!%%~nF.obj"
-    set "PDB=%INTERMEDIATE_DIR%\!RELDIR!%%~nF.pdb"
+    set "OBJ=%OBJ_ROOT%\!RELDIR!%%~nF.obj"
+    set "PDB=%OBJ_ROOT%\!RELDIR!%%~nF.pdb"
 
     echo Compiling: %%~nxF
     set "CLLOG=%TEMP%\cl_%RANDOM%.log"
@@ -128,7 +142,7 @@ if %FAILED% GTR 0 (
 ) else (
     echo !GREEN!Compiled: %COUNT%   Failed: %FAILED%!RESET!
 )
-echo Object files are in: %INTERMEDIATE_DIR%
+echo Object files are in: %OBJ_ROOT%
 echo ============================================================
 
 if %FAILED% GTR 0 exit /b 1
