@@ -69,6 +69,9 @@ Testing/
 .cache/
 
 # Frankengine Project
+Dependency
 !/Library/OpenGL_static_x86/glfw3.lib
+!/Library/imgui_static/ImGui.lib
 !/tests/OpenGL_dynamic_x86/glfw3.dll
 !/tests/OpenGL_dynamic_x86/glfw3dll.lib
+

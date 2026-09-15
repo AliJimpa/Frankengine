@@ -1,13 +1,23 @@
 #include <iostream>
-#include "Library/OpenGL_static_x86/glfw3.h"
+#include "EditorUI.h"
+#include "W_Demo.h"
 
 #define LOG(x) std::cout << x << std::endl
 
+bool isRunning;
+
 int main()
 {
-    LOG("Start");
-    int a = glfwInit();
-    LOG("End");
+    Initialize();
+
+    W_Demo *widgetPtr = new W_Demo();
+    MyWidgets.push_back(widgetPtr);
+
+    while (isRunning)
+    {
+        if (canRender())
+            Render();
+    }
 
     std::cin.get();
 }

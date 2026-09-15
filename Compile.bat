@@ -54,7 +54,7 @@ if exist "%LIBRARY_DIR%" set "INCLUDES=%INCLUDES% /I"%LIBRARY_DIR%""
 
 echo ============================================================
 echo Project     : %PROJECT_DIR%
-echo Assets      : %ASSETS_DIR%
+echo Source      : %ASSETS_DIR%
 echo Intermediate: %INTERMEDIATE_DIR%
 echo ============================================================
 
