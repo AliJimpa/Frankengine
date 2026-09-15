@@ -1,10 +1,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <vector>
-#include "Library/OpenGL_static_x86/glfw3.h"
-#include "Library/imgui_opengl_static/imGUI_impl_glfw.h"
-#include "Library/imgui_opengl_static/imGUI_impl_opengl2.h"
-#include "Library/imgui_opengl_static/imgui.h"
+#include "Library/OpenGL_libx86/glfw3.h"
+#include "Library/imgui_opengl_libx86/imGUI_impl_glfw.h"
+#include "Library/imgui_opengl_libx86/imGUI_impl_opengl2.h"
+#include "Library/imgui_opengl_libx86/imgui.h"
 
 class UISetting
 {
@@ -44,7 +44,8 @@ void Initialize()
     // Create window with graphics context
     // GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     // const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-    window = glfwCreateWindow(20, 20, "Frankengine", nullptr, nullptr);
+    //window = glfwCreateWindow(20, 20, "Frankengine", nullptr, nullptr);
+    window = glfwCreateWindow(1280, 720, "Frankengine", nullptr, nullptr);
     if (window == nullptr)
         return;
 
@@ -59,7 +60,7 @@ void Initialize()
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
     // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
     // Setup Dear ImGui style
@@ -67,11 +68,11 @@ void Initialize()
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     ImGuiStyle &style = ImGui::GetStyle();
-    // if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    // {
-    //     style.WindowRounding = 0.0f;
-    //     style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    // }
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);

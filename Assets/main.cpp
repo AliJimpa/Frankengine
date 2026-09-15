@@ -1,6 +1,7 @@
 #include <iostream>
-//#include "EditorUI.h"
-//#include "W_Demo.h"
+#include "EditorUI.h"
+#include "W_Demo.h"
+//#include "Library/OpenGL_dllx86/glfw3.h"
 
 #define LOG(x) std::cout << x << std::endl
 
@@ -8,17 +9,21 @@ bool isRunning;
 
 int main()
 {
-    // Initialize();
+    Initialize();
 
-    // W_Demo *widgetPtr = new W_Demo();
-    // MyWidgets.push_back(widgetPtr);
+    W_Demo *widgetPtr = new W_Demo();
+    MyWidgets.push_back(widgetPtr);
 
-    // while (isRunning)
-    // {
-    //     if (canRender())
-    //         Render();
-    // }
+    while (isRunning)
+    {
+        if (canRender())
+            Render();
+    }
 
     LOG("TEST");
+
+    // int a = glfwInit();
+    // LOG(a);
+
     std::cin.get();
 }
