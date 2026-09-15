@@ -10,7 +10,7 @@ REM     BuildImGui.bat "C:\Path\To\Project"
 REM
 REM Output:
 REM     Intermediate\*.obj
-REM     Library\imgui_opengl_static\ImGui.lib
+REM     Library\imgui_opengl_libx86\ImGui.lib
 REM ============================================================
 
 
@@ -33,8 +33,8 @@ set "PROJECT_DIR=%~1"
 set "IMGUI_DIR=%PROJECT_DIR%\Dependency\imgui"
 set "GLFW_DIR=%PROJECT_DIR%\Dependency\glfw-3.5.1.bin.WIN32"
 
-set "INTERMEDIATE_DIR=%PROJECT_DIR%\Intermediate"
-set "LIBRARY_DIR=%PROJECT_DIR%\Library\imgui_opengl_static"
+set "INTERMEDIATE_DIR=%PROJECT_DIR%\Intermediate\imgui"
+set "LIBRARY_DIR=%PROJECT_DIR%\Library\imgui_opengl_libx86"
 
 set "OUTPUT_LIB=%LIBRARY_DIR%\ImGui.lib"
 
@@ -266,16 +266,16 @@ Your final output should be:
 
 ```text
 Intermediate
-│
-├── imgui.obj
-├── imgui_draw.obj
-├── imgui_tables.obj
-├── imgui_widgets.obj
-├── imgui_impl_glfw.obj
-└── imgui_impl_opengl2.obj
+└── imgui
+    ├── imgui.obj
+    ├── imgui_draw.obj
+    ├── imgui_tables.obj
+    ├── imgui_widgets.obj
+    ├── imgui_impl_glfw.obj
+    └── imgui_impl_opengl2.obj
 
 Library
-└── imgui_opengl_static
+└── imgui_opengl_libx86
     └── ImGui.lib
 ```
 
