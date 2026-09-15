@@ -54,33 +54,28 @@ if errorlevel 1 (
     )
 )
 
-:: --- Read Config\build.ini (or game.ini) to decide /MD vs /MT ---
+:: --- Read Config\build.ini (or game.ini) [Build] section to decide /MD vs /MT ---
 set "CRTFLAG=/MD"
-set "STATIC_COUNT=0"
-set "DYNAMIC_COUNT=0"
 set "INIFILE=%PROJECT_DIR%\Config\build.ini"
 if not exist "%INIFILE%" set "INIFILE=%PROJECT_DIR%\Config\game.ini"
 
 if exist "%INIFILE%" (
-    echo Reading library config: %INIFILE%
+    echo Reading build config: %INIFILE%
     set "SECTION="
     for /f "usebackq tokens=* delims=" %%R in ("%INIFILE%") do (
         set "RAW=%%R"
         if not "!RAW!"=="" if not "!RAW:~0,1!"==";" if not "!RAW:~0,1!"=="#" (
             if "!RAW:~0,1!"=="[" (
                 set "SECTION=!RAW!"
-            ) else if /I "!SECTION!"=="[Libraries]" (
+            ) else if /I "!SECTION!"=="[Build]" (
                 for /f "tokens=1,2 delims==" %%A in ("!RAW!") do (
-                    if /I "%%B"=="static"  set /a STATIC_COUNT+=1
-                    if /I "%%B"=="dynamic" set /a DYNAMIC_COUNT+=1
+                    if /I "%%A"=="CRT" (
+                        if /I "%%B"=="MT" set "CRTFLAG=/MT"
+                        if /I "%%B"=="MD" set "CRTFLAG=/MD"
+                    )
                 )
             )
         )
-    )
-    if !STATIC_COUNT! GTR 0 set "CRTFLAG=/MT"
-    if !STATIC_COUNT! GTR 0 if !DYNAMIC_COUNT! GTR 0 (
-        echo !RED![WARN] build.ini mixes 'static' and 'dynamic' libraries.!RESET!
-        echo !RED![WARN] Compiling with /MT - dynamic libraries expecting /MD may fail to link.!RESET!
     )
 ) else (
     echo [INFO] No Config\build.ini found, defaulting to /MD.

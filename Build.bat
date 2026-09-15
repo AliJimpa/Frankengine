@@ -166,14 +166,14 @@ if !LINKERR! NEQ 0 (
 )
 
 echo ============================================================
-echo Copying DLLs from dynamic libraries to build folder...
+echo Copying DLLs from included libraries to build folder...
 echo ============================================================
 if !LIBCOUNT! GTR 0 (
     for /L %%I in (1,1,!LIBCOUNT!) do (
         set "LNAME=!LIB_NAME[%%I]!"
         set "LSTATUS=!LIB_STATUS[%%I]!"
         set "LDIR=%LIBRARY_DIR%\!LNAME!"
-        if /I "!LSTATUS!"=="dynamic" if exist "!LDIR!" (
+        if /I not "!LSTATUS!"=="skip" if exist "!LDIR!" (
             call :CopyDlls "!LDIR!" "!LNAME!"
         )
     )
