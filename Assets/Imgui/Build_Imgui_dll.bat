@@ -2,18 +2,18 @@
 setlocal EnableDelayedExpansion
 
 REM ============================================================
-REM BuildImGuiDLL.bat
+REM BuildImGui.bat
 REM
 REM Usage:
-REM     BuildImGuiDLL.bat "C:\Path\To\Project"
+REM     BuildImGui.bat "C:\Path\To\Project"
 REM
 REM
 REM Input:
 REM     Dependency\imgui
 REM
 REM Output:
-REM     Intermediate\imgui_dll\*.obj
-REM     Library\imgui_opengl_dllx86\ImGui.dll
+REM     Intermediate\imgui\*.obj
+REM     Library\imgui_opengl_dllx86\ImGui.lib
 REM     Library\imgui_opengl_dllx86\*.h
 REM ============================================================
 
@@ -41,9 +41,7 @@ REM ============================================================
 
 set "IMGUI_DIR=%PROJECT_DIR%\Dependency\imgui"
 
-set "GLFW_DIR=%PROJECT_DIR%\Dependency\glfw"
-
-set "INTERMEDIATE_DIR=%PROJECT_DIR%\Intermediate\imgui_dll"
+set "INTERMEDIATE_DIR=%PROJECT_DIR%\Intermediate\imgui"
 
 set "LIBRARY_DIR=%PROJECT_DIR%\Library\imgui_opengl_dllx86"
 
@@ -55,6 +53,10 @@ REM HEADER FILE LIST
 REM
 REM These files are ONLY copied.
 REM They are NOT compiled.
+REM
+REM Format:
+REM     set "HEADER_1=..."
+REM     set "HEADER_2=..."
 REM ============================================================
 
 set "HEADER_1=imgui.h"
@@ -68,13 +70,16 @@ REM ============================================================
 REM CPP FILE LIST
 REM
 REM These files are compiled into .obj files.
+REM
+REM Format:
+REM     set "CPP_1=..."
+REM     set "CPP_2=..."
 REM ============================================================
 
 set "CPP_1=imgui.cpp"
 set "CPP_2=imgui_draw.cpp"
 set "CPP_3=imgui_tables.cpp"
 set "CPP_4=imgui_widgets.cpp"
-
 set "CPP_5=backends\imgui_impl_glfw.cpp"
 set "CPP_6=backends\imgui_impl_opengl2.cpp"
 
@@ -90,7 +95,10 @@ echo ============================================================
 echo.
 
 if exist "%LIBRARY_DIR%" (
-    echo Removing old files...
+    echo Removing:
+    echo %LIBRARY_DIR%
+    echo.
+
     del /q /f "%LIBRARY_DIR%\*" >nul 2>&1
 )
 
@@ -109,21 +117,13 @@ if not exist "%INTERMEDIATE_DIR%" (
 
 
 REM ============================================================
-REM Check Dependencies
+REM Check ImGui
 REM ============================================================
 
 if not exist "%IMGUI_DIR%" (
     echo.
     echo ERROR: ImGui dependency not found:
     echo %IMGUI_DIR%
-    echo.
-    exit /b 1
-)
-
-if not exist "%GLFW_DIR%\include" (
-    echo.
-    echo ERROR: GLFW include directory not found:
-    echo %GLFW_DIR%\include
     echo.
     exit /b 1
 )
@@ -144,7 +144,6 @@ for /L %%N in (1,1,5) do (
     for %%F in ("!HEADER_%%N!") do (
 
         set "SOURCE_HEADER=%IMGUI_DIR%\%%~F"
-        set "HEADER_DIR=%%~dpF"
 
         if not exist "!SOURCE_HEADER!" (
             echo.
@@ -154,17 +153,9 @@ for /L %%N in (1,1,5) do (
             exit /b 1
         )
 
-        REM Create subdirectory if required
-
-        if not "%%~dpF"=="" (
-            if not exist "%LIBRARY_DIR%\%%~dpF" (
-                mkdir "%LIBRARY_DIR%\%%~dpF"
-            )
-        )
-
         echo [COPY] %%F
 
-        copy /Y "!SOURCE_HEADER!" "%LIBRARY_DIR%\%%~dpF" >nul
+        copy /Y "!SOURCE_HEADER!" "%LIBRARY_DIR%\" >nul
 
         if errorlevel 1 (
             echo.
@@ -205,7 +196,7 @@ for /L %%N in (1,1,6) do (
         echo [C++] %%F
 
         REM ----------------------------------------------------
-        REM GLFW Backend
+        REM GLFW backend needs GLFW include directory
         REM ----------------------------------------------------
 
         if "%%~nxF"=="imgui_impl_glfw.cpp" (
@@ -216,7 +207,7 @@ for /L %%N in (1,1,6) do (
                 /EHsc ^
                 /MD ^
                 /I "%IMGUI_DIR%" ^
-                /I "%GLFW_DIR%\include" ^
+                /I "%PROJECT_DIR%\Dependency\glfw\include" ^
                 "!SOURCE_CPP!" ^
                 /Fo"%INTERMEDIATE_DIR%\!CPP_NAME!.obj"
 
@@ -244,31 +235,29 @@ for /L %%N in (1,1,6) do (
 
 
 REM ============================================================
-REM Create DLL
+REM Create ImGui Library
 REM ============================================================
 
 echo.
 echo ============================================================
-echo Creating ImGui.dll
+echo Creating ImGui.lib
 echo ============================================================
 echo.
 
-link ^
+lib ^
     /DLL ^
-    /NOLOGO ^
+    /nologo ^
     /OUT:"%OUTPUT_DLL%" ^
     "%INTERMEDIATE_DIR%\imgui.obj" ^
     "%INTERMEDIATE_DIR%\imgui_draw.obj" ^
     "%INTERMEDIATE_DIR%\imgui_tables.obj" ^
     "%INTERMEDIATE_DIR%\imgui_widgets.obj" ^
     "%INTERMEDIATE_DIR%\imgui_impl_glfw.obj" ^
-    "%INTERMEDIATE_DIR%\imgui_impl_opengl2.obj" ^
-    opengl32.lib
-
+    "%INTERMEDIATE_DIR%\imgui_impl_opengl2.obj"
 
 if errorlevel 1 (
     echo.
-    echo ERROR: Failed to create ImGui.dll
+    echo ERROR: Failed to create ImGui.lib
     echo.
     exit /b 1
 )
@@ -280,11 +269,11 @@ REM ============================================================
 
 echo.
 echo ============================================================
-echo ImGui DLL Build Complete
+echo ImGui Build Complete
 echo ============================================================
 echo.
 
-echo DLL:
+echo Library:
 echo %OUTPUT_DLL%
 
 echo.
