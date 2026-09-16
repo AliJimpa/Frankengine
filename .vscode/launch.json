@@ -11,7 +11,7 @@
             "cwd": "${workspaceFolder}\\Binaries\\Win64",
             "environment": [],
             "console": "integratedTerminal",
-            "preLaunchTask": "Build"
+            //"preLaunchTask": "Build"
         }
     ]
 }

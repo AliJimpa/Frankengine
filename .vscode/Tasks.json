@@ -54,11 +54,30 @@
         {
             "label": "Make imgui library (static)",
             "type": "shell",
-            "command": "${workspaceFolder}\\Assets\\imgui\\Build_Imgui_Library.bat",
+            "command": "${workspaceFolder}\\Assets\\imgui\\Build_Imgui_lib.bat",
             "args": [
                 "${workspaceFolder}",
                 "imgui",
                 "imgui_opengl_libx86"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "focus": true
+            }
+        },
+        {
+            "label": "Make imgui library (dynamic)",
+            "type": "shell",
+            "command": "${workspaceFolder}\\Assets\\imgui\\Build_Imgui_dll.bat",
+            "args": [
+                "${workspaceFolder}",
+                "imgui",
+                "imgui_opengl_dllx86"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
