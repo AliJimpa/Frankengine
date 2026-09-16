@@ -44,8 +44,8 @@ void Initialize()
     // Create window with graphics context
     // GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     // const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-    //window = glfwCreateWindow(20, 20, "Frankengine", nullptr, nullptr);
-    window = glfwCreateWindow(1280, 720, "Frankengine", nullptr, nullptr);
+    window = glfwCreateWindow(20, 20, "Frankengine", nullptr, nullptr);
+    //window = glfwCreateWindow(1280, 720, "Frankengine", nullptr, nullptr);
     if (window == nullptr)
         return;
 
@@ -61,7 +61,7 @@ void Initialize()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -116,13 +116,13 @@ void Render()
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
     ImGuiIO &io = ImGui::GetIO();
-    // if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    // {
-    //     GLFWwindow *backup_current_context = glfwGetCurrentContext();
-    //     ImGui::UpdatePlatformWindows();
-    //     ImGui::RenderPlatformWindowsDefault();
-    //     glfwMakeContextCurrent(backup_current_context);
-    // }
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        GLFWwindow *backup_current_context = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup_current_context);
+    }
 
     glfwMakeContextCurrent(window);
     glfwSwapBuffers(window);

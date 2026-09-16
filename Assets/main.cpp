@@ -5,7 +5,7 @@
 
 #define LOG(x) std::cout << x << std::endl
 
-bool isRunning;
+bool isRunning = true;
 
 int main()
 {

@@ -31,7 +31,7 @@ if "%~1"=="" (
 set "PROJECT_DIR=%~1"
 
 set "IMGUI_DIR=%PROJECT_DIR%\Dependency\imgui"
-set "GLFW_DIR=%PROJECT_DIR%\Dependency\glfw-3.5.1.bin.WIN32"
+set "GLFW_DIR=%PROJECT_DIR%\Dependency\glfw"
 
 set "INTERMEDIATE_DIR=%PROJECT_DIR%\Intermediate\imgui"
 set "LIBRARY_DIR=%PROJECT_DIR%\Library\imgui_opengl_libx86"

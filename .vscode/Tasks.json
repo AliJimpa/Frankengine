@@ -51,18 +51,23 @@
                 "panel": "shared"
             }
         },
-        ///
         {
-            "label": "ImGui: Build Library",
+            "label": "Make imgui library (static)",
             "type": "shell",
-            "command": "${workspaceFolder}\\BuildImGui.bat",
+            "command": "${workspaceFolder}\\Assets\\imgui\\Build_Imgui_Library.bat",
             "args": [
-                "${workspaceFolder}"
+                "${workspaceFolder}",
+                "imgui",
+                "imgui_opengl_libx86"
             ],
-            "problemMatcher": "$msCompile",
-            "group": {
-                "kind": "build",
-                "isDefault": true
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "focus": true
             }
         }
     ]
