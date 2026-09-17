@@ -131,7 +131,7 @@ Index of this file:
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "Library/imgui_opengl_libx86/imgui.h"
+#include "Library/imgui_opengl/imgui.h"
 #ifndef IMGUI_DISABLE
 
 // System includes

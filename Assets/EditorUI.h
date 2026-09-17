@@ -1,10 +1,10 @@
 #include <iostream>
 #include <stdio.h>
 #include <vector>
-#include "Library/OpenGL_libx86/glfw3.h"
-#include "Library/imgui_opengl_libx86/imGUI_impl_glfw.h"
-#include "Library/imgui_opengl_libx86/imGUI_impl_opengl2.h"
-#include "Library/imgui_opengl_libx86/imgui.h"
+#include "Library/OpenGL/glfw3.h"
+#include "Library/imgui_opengl/imGUI_impl_glfw.h"
+#include "Library/imgui_opengl/imGUI_impl_opengl2.h"
+#include "Library/imgui_opengl/imgui.h"
 
 class UISetting
 {

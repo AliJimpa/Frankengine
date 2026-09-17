@@ -1,7 +1,7 @@
 #include <iostream>
 #include "EditorUI.h"
 #include "W_Demo.h"
-//#include "Library/OpenGL_dllx86/glfw3.h"
+// #include "Library/OpenGL/glfw3.h"
 
 #define LOG(x) std::cout << x << std::endl
 
