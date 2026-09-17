@@ -54,9 +54,9 @@ if errorlevel 1 (
     )
 )
 
-:: --- Read Config\build.ini (or game.ini): [Modules] and [Libraries] ---
+:: --- Read Config\build.ini (or game.ini): [Link] and [Libraries] ---
 set "LIBCOUNT=0"
-set "MODCOUNT=0"
+set "LINKCOUNT=0"
 set "INIFILE=%PROJECT_DIR%\Config\build.ini"
 if not exist "%INIFILE%" set "INIFILE=%PROJECT_DIR%\Config\game.ini"
 
@@ -75,10 +75,10 @@ if exist "%INIFILE%" (
                         set "LIB_NAME[!LIBCOUNT!]=%%A"
                         set "LIB_STATUS[!LIBCOUNT!]=%%B"
                     )
-                    if /I "!SECTION!"=="[Modules]" (
-                        set /a MODCOUNT+=1
-                        set "MOD_NAME[!MODCOUNT!]=%%A"
-                        set "MOD_STATUS[!MODCOUNT!]=%%B"
+                    if /I "!SECTION!"=="[Link]" (
+                        set /a LINKCOUNT+=1
+                        set "LINK_NAME[!LINKCOUNT!]=%%A"
+                        set "LINK_STATUS[!LINKCOUNT!]=%%B"
                     )
                 )
             )
@@ -88,24 +88,35 @@ if exist "%INIFILE%" (
     echo [INFO] No Config\build.ini found, using all objs and libraries found on disk.
 )
 
-:: --- Collect .obj files from the module folders listed in [Modules] ---
+:: --- Collect .obj files: \Intermediate\Assets is always included, ---
+:: --- [Link] entries with status=include add extra module folders. ---
 set "OBJLIST="
-if !MODCOUNT! GTR 0 (
-    for /L %%I in (1,1,!MODCOUNT!) do (
-        set "MNAME=!MOD_NAME[%%I]!"
-        set "MSTATUS=!MOD_STATUS[%%I]!"
-        set "MDIR=%INTERMEDIATE_DIR%\!MNAME!"
-        if /I "!MSTATUS!"=="skip" (
-            echo [SKIP] module !MNAME! ^(status=skip^)
-        ) else if not exist "!MDIR!" (
-            echo !RED![WARN] Module folder not found: !MDIR!!RESET!
-        ) else (
-            echo [MODULE] !MNAME!
-            call :CollectObjs "!MDIR!"
+if exist "%INTERMEDIATE_DIR%\Assets" (
+    echo [BASE] Assets
+    call :CollectObjs "%INTERMEDIATE_DIR%\Assets"
+) else if !LINKCOUNT! EQU 0 (
+    :: No build.ini at all: fall back to scanning everything under Intermediate
+    call :CollectObjs "%INTERMEDIATE_DIR%"
+) else (
+    echo !RED![WARN] \Intermediate\Assets not found.!RESET!
+)
+
+if !LINKCOUNT! GTR 0 (
+    for /L %%I in (1,1,!LINKCOUNT!) do (
+        set "LKNAME=!LINK_NAME[%%I]!"
+        set "LKSTATUS=!LINK_STATUS[%%I]!"
+        set "LKDIR=%INTERMEDIATE_DIR%\!LKNAME!"
+        if /I "!LKSTATUS!"=="skip" (
+            echo [SKIP] module !LKNAME! ^(status=skip^)
+        ) else if /I "!LKSTATUS!"=="include" (
+            if not exist "!LKDIR!" (
+                echo !RED![WARN] Module folder not found: !LKDIR!!RESET!
+            ) else (
+                echo [MODULE] !LKNAME!
+                call :CollectObjs "!LKDIR!"
+            )
         )
     )
-) else (
-    call :CollectObjs "%INTERMEDIATE_DIR%"
 )
 
 if "!OBJLIST!"=="" (
